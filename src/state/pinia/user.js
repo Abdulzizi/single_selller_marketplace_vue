@@ -30,7 +30,7 @@ export const useUserStore = defineStore('user', {
         },
         async getUsers() {
             try {
-                const url = `${this.apiUrl}/api/v1/users?page=${this.current}&perPage=${this.perpage}&name=${this.searchQuery}`;
+                const url = `${this.apiUrl}/v1/users?page=${this.current}&perPage=${this.perpage}&name=${this.searchQuery}`;
                 const res = await axios.get(url);
 
                 const usersDataList = res.data.data.list
@@ -54,7 +54,7 @@ export const useUserStore = defineStore('user', {
         },
         async addUsers(users) {
             try {
-                const res = await axios.post(`${this.apiUrl}/api/v1/users`, users);
+                const res = await axios.post(`${this.apiUrl}/v1/users`, users);
                 this.response = {
                     status: res.status,
                     message: res.data.message
@@ -72,7 +72,7 @@ export const useUserStore = defineStore('user', {
         async deleteUser(id) {
             this.loading = true;
             try {
-                await axios.delete(`${this.apiUrl}/api/v1/users/${id}`);
+                await axios.delete(`${this.apiUrl}/v1/users/${id}`);
                 this.response = {
                     status: '200',
                 };
@@ -88,7 +88,7 @@ export const useUserStore = defineStore('user', {
         },
         async updateUser(users) {
             try {
-                await axios.put(`${this.apiUrl}/api/v1/users`, users);
+                await axios.put(`${this.apiUrl}/v1/users`, users);
                 this.response = {
                     status: '200',
                 };
