@@ -3,6 +3,8 @@
   "version": "4.0.2",
   "private": true,
   "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
     "build:production": "vue-cli-service build --mode production && cp .htaccess dist/.htaccess",
     "build:staging": "vue-cli-service build --mode staging && cp .htaccess dist/.htaccess",
     "build:dev": "vue-cli-service build --mode development && cp .htaccess dist/.htaccess",
