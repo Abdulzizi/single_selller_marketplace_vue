@@ -5,7 +5,7 @@ import axios from 'axios';
 
 export const useUserStore = defineStore('user', {
     state: () => ({
-        apiUrl: process.env.VUE_APP_APIURL,
+        apiUrl: import.meta.env.VITE_APP_APIURL,
         users: [],
         user: null,
         response: {

@@ -3,7 +3,7 @@ export default [
   {
     path: "/",
     name: "default",
-    meta: { title: "Dashboard", authRequired: true },
+    meta: { title: "Dashboard", authRequired: false },
     component: () => import("../views/dashboards/default")
   },
   {

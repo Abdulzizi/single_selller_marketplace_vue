@@ -4,7 +4,7 @@ import axios from 'axios';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    apiUrl: process.env.VUE_APP_APIURL,
+    apiUrl: import.meta.env.VITE_APP_APIURL,
     userLogin: {},
     csrfToken: '',
     bearerToken: '',

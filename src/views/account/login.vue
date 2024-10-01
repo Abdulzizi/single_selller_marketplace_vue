@@ -55,7 +55,7 @@ export default {
       if (this.v$.$invalid) {
         return;
       } else {
-        if (process.env.VUE_APP_DEFAULT_AUTH === "firebase") {
+        if (import.meta.env.VITE_APP_DEFAULT_AUTH === "firebase") {
           this.tryingToLogIn = true;
           // Reset the authError if it existed.
           this.authError = null;
@@ -72,12 +72,12 @@ export default {
             this.authError = error ? error : "";
             this.isAuthError = true;
           })
-        } else if (process.env.VUE_APP_DEFAULT_AUTH === "fakebackend") {
+        } else if (import.meta.env.VITE_APP_DEFAULT_AUTH === "fakebackend") {
           const { email, password } = this;
           if (email && password) {
             // authFake.login(email, password)
           }
-        } else if (process.env.VUE_APP_DEFAULT_AUTH === "authapi") {
+        } else if (import.meta.env.VITE_APP_DEFAULT_AUTH === "authapi") {
 
           axios
             .post("http://127.0.0.1:8000/api/login", {

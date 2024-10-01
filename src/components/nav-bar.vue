@@ -5,61 +5,12 @@ import { avatar3, avatar4, avatar1 } from "@/assets/images/users/data"
 import { useAuthStore } from '@/state/pinia'
 const auth = useAuthStore()
 
-import i18n from "../i18n";
 
 /**
  * Nav-bar Component
  */
 export default {
-  data() {
-    return {
-      lang: "en",
-      lan: i18n.locale,
-      text: null,
-      flag: null,
-      value: null,
-      avatar3, avatar4, avatar1,
-      languages: [
-        {
-          flag: require("@/assets/images/flags/us.jpg"),
-          language: "en",
-          title: "English",
-        },
-        {
-          flag: require("@/assets/images/flags/french.jpg"),
-          language: "fr",
-          title: "French",
-        },
-        {
-          flag: require("@/assets/images/flags/spain.jpg"),
-          language: "es",
-          title: "Spanish",
-        },
-        {
-          flag: require("@/assets/images/flags/chaina.png"),
-          language: "zh",
-          title: "Chinese",
-        },
-        {
-          flag: require("@/assets/images/flags/arabic.png"),
-          language: "ar",
-          title: "Arabic",
-        },
-      ],
-      locales: ["fr", "en", "ar"]
-    };
-  },
   components: { simplebar },
-  mounted() {
-    if (process.env.VUE_APP_I18N_LOCALE) {
-      this.flag = this.$i18n.locale || process.env.VUE_APP_I18N_LOCALE;
-      this.languages.forEach((item) => {
-        if (item.language == this.flag) {
-          document.getElementById("header-lang-img")?.setAttribute("src", item.flag);
-        }
-      });
-    }
-  },
   computed: {
     currentUser() {
       return auth.currentUser
@@ -98,14 +49,6 @@ export default {
           document.webkitCancelFullScreen();
         }
       }
-    },
-
-    setLanguage(locale, country, flag) {
-      this.lan = locale;
-      this.text = country;
-      this.flag = flag;
-      document.getElementById("header-lang-img").setAttribute("src", flag);
-      this.$i18n.locale = locale
     },
 
     logoutUser() {
@@ -387,10 +330,6 @@ export default {
           <template v-slot:button-content>
             <img id="header-lang-img" src="@/assets/images/flags/us.jpg" alt="Header Language" height="16" />
           </template>
-          <BLink href="#" v-for="(entry, i) in languages" :key="`Lang${i}`" :value="entry" @click="setLanguage(entry.language, entry.title, entry.flag)" :class="{ active: lan === entry.language }" class="dropdown-item notify-item language">
-            <img :src="entry.flag" alt="user-image" class="me-1" height="12" />
-            <span class="align-middle">{{ entry.title }}</span>
-          </BLink>
         </BDropdown>
 
         <div class="dropdown d-none d-lg-inline-block ms-1">

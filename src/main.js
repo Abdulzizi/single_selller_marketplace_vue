@@ -15,12 +15,16 @@ import 'bootstrap-vue-next/dist/bootstrap-vue-next.css'
 import "@/assets/scss/app.scss";
 import "@vueform/multiselect/themes/default.css"
 
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
+
 // PINIA
 import pinia from '@/state/pinia'
 
 import 'sweetalert2/dist/sweetalert2.min.css';
 import '@vueform/slider/themes/default.css';
 import VueProgressBar from '@aacassandra/vue3-progressbar'
+import { Money3Directive } from 'v-money3'
 
 // Konfigurasi vue-progressbar
 const rootStyles = getComputedStyle(document.documentElement);
@@ -51,15 +55,12 @@ const app = createApp(App)
   .use(VueApexCharts)
   .use(vClickOutside)
   .use(VueProgressBar, optionsProgressBar)
-  // .use(i18n)
   .use(registerScrollSpy)
   .directive("maska", vMaska)
-  
+  .directive('money3', Money3Directive)
+
 // Tambahkan VueProgressBar ke globalProperties
 app.config.globalProperties.$Progress = app.config.globalProperties.$Progress || {};
-
-import { axiosInterceptors } from '@/core/interceptor/axios-interceptor'; // Impor fungsi setupInterceptors
-axiosInterceptors();
-
+app.component('VueDatePicker', VueDatePicker);
 
 app.mount('#app')

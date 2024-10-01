@@ -6,9 +6,9 @@ import Layout from "../../layouts/auth";
 import { required, email, helpers } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 
-import { useAuthStore, useNotificationStore } from '@/state/pinia'
+import { useAuthStore } from '@/state/pinia'
 const auth = useAuthStore()
-const notificationStore = useNotificationStore();
+// const notificationStore = useNotificationStore();
 
 /**
  * Register component
@@ -49,9 +49,6 @@ export default {
     },
   },
   computed: {
-    notification() {
-      return notificationStore || {};
-    },
   },
   methods: {
     // Try to register the user in with the email, username
@@ -64,7 +61,7 @@ export default {
       if (this.v$.$invalid) {
         return;
       } else {
-        if (process.env.VUE_APP_DEFAULT_AUTH === "firebase") {
+        if (import.meta.env.VITE_APP_DEFAULT_AUTH === "firebase") {
           this.tryingToRegister = true;
           // Reset the regError if it existed.
           this.regError = null;
@@ -82,12 +79,12 @@ export default {
             this.regError = error ? error : "";
             this.isRegisterError = true;
           })
-        } else if (process.env.VUE_APP_DEFAULT_AUTH === "fakebackend") {
+        } else if (import.meta.env.VITE_APP_DEFAULT_AUTH === "fakebackend") {
           const { email, username, password } = this.user;
           if (email && username && password) {
             // fakeAuth.registeruser(this.user);
           }
-        } else if (process.env.VUE_APP_DEFAULT_AUTH === "authapi") {
+        } else if (import.meta.env.VITE_APP_DEFAULT_AUTH === "authapi") {
           axios
             .post("http://127.0.0.1:8000/api/register", {
               username: this.user.username,
