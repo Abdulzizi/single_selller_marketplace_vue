@@ -4,13 +4,19 @@ export default [
     path: "/",
     name: "default",
     meta: { title: "Dashboard", authRequired: false },
-    component: () => import("../views/dashboards/default")
+    component: () => import("../views/dashboards/default"),
   },
+  // {
+  //   path: "/user",
+  //   name: "user",
+  //   meta: { title: "Master User", authRequired: true },
+  //   component: () => import("../views/user")
+  // },
   {
     path: "/user",
     name: "user",
-    meta: { title: "Master User", authRequired: true },
-    component: () => import("../views/user")
+    meta: { title: "Master User", authRequired: false },
+    component: () => import("../views/user"),
   },
   {
     path: "/login",
@@ -25,8 +31,8 @@ export default [
         } else {
           next();
         }
-      }
-    }
+      },
+    },
   },
   {
     path: "/register",
@@ -41,8 +47,8 @@ export default [
         } else {
           next();
         }
-      }
-    }
+      },
+    },
   },
   {
     path: "/forgot-password",
@@ -57,8 +63,8 @@ export default [
         } else {
           next();
         }
-      }
-    }
+      },
+    },
   },
   {
     path: "/logout",
@@ -74,8 +80,8 @@ export default [
         next(
           authRequiredOnPreviousRoute ? { name: "default" } : { ...routeFrom }
         );
-      }
-    }
+      },
+    },
   },
   // Redirect any unmatched routes to the 404 page. This may
   // require some server configuration to work in production:
@@ -93,5 +99,4 @@ export default [
     path: "/:catchAll(.*)", // This replaces the previous wildcard
     redirect: { name: "NotFound" },
   },
-
 ];
