@@ -1,0 +1,20 @@
+- [ ] Create a view for Categories
+  - [ ] Design UI for category listing
+  - [ ] Implement API integration to fetch categories
+  - [ ] Add functionality to add/edit/delete categories
+
+- [ ] Create a view for Products
+  - [ ] Design UI for product listing
+  - [ ] Implement API integration to fetch products
+  - [ ] Add functionality to add/edit/delete products
+
+- [ ] Create a view for Carts
+  - [ ] Design UI for cart details
+  - [ ] Implement API integration to manage cart items
+  - [ ] Add functionality to update/remove items from cart
+
+- [ ] Create a view for Orders
+  - [ ] Design UI for order listing and details
+  - [ ] Implement API integration to fetch and manage orders
+  - [ ] Add functionality to update order status and details
+

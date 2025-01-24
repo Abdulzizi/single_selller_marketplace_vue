@@ -12,12 +12,20 @@ export default [
   //   meta: { title: "Master User", authRequired: true },
   //   component: () => import("../views/user")
   // },
+
   {
     path: "/user",
     name: "user",
     meta: { title: "Master User", authRequired: false },
     component: () => import("../views/user"),
   },
+  {
+    path: "/product-category",
+    name: "product-category",
+    meta: { title: "Master Product Category", authRequired: false },
+    component: () => import("../views/product-category"),
+  },
+
   {
     path: "/login",
     name: "login",
