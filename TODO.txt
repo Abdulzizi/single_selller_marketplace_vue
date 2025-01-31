@@ -1,10 +1,10 @@
 - [ ] Create a view for Categories
-  - [ ] Design UI for category listing
-  - [ ] Implement API integration to fetch categories
-  - [ ] Add functionality to add/edit/delete categories
+  - [x] Design UI for category listing
+  - [x] Implement API integration to fetch categories
+  - [x] Add functionality to add/edit/delete categories
 
 - [ ] Create a view for Products
-  - [ ] Design UI for product listing
+  - [x] Design UI for product listing
   - [ ] Implement API integration to fetch products
   - [ ] Add functionality to add/edit/delete products
 

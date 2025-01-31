@@ -17,13 +17,25 @@ export default [
     path: "/user",
     name: "user",
     meta: { title: "Master User", authRequired: false },
-    component: () => import("../views/user"),
+    component: () => import("../views/admin/user"),
   },
   {
     path: "/product-category",
     name: "product-category",
     meta: { title: "Master Product Category", authRequired: false },
-    component: () => import("../views/product-category"),
+    component: () => import("../views/admin/product-category"),
+  },
+  {
+    path: "/product",
+    name: "product",
+    meta: { title: "Master Products", authRequired: false },
+    component: () => import("../views/admin/product"),
+  },
+  {
+    path: "/product-form/:id?",
+    name: "product-form",
+    meta: { title: "Form Product", authRequired: false },
+    component: () => import("../views/admin/product/form"),
   },
 
   {

@@ -20,7 +20,7 @@ export const useUserStore = defineStore("user", {
     totalData: 0,
     current: 1,
     perPage: 5,
-    searchQuery: 0,
+    searchQuery: "",
   }),
   actions: {
     openForm(newAction, user) {

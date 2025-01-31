@@ -166,7 +166,7 @@
 
 <script setup>
 import { ref, onMounted, reactive, computed } from "vue";
-import Layout from "../../layouts/main";
+import Layout from "@/layouts/main";
 import PageHeader from "@/components/page-header";
 import Pagination from "@/components/widgets/pagination";
 import { useUserStore } from "@/state/pinia";
