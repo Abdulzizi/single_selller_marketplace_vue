@@ -46,6 +46,12 @@ export default [
     meta: { title: "List of products", authRequired: false },
     component: () => import("../views/client/index.vue"),
   },
+  {
+    path: "/product/:slug",
+    name: "product-detail",
+    meta: { title: "Product Detail", authRequired: false },
+    component: () => import("../views/client/product-detail"),
+  },
 
   {
     path: "/login",
