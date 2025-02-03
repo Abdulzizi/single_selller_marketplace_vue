@@ -13,6 +13,7 @@ export default [
   //   component: () => import("../views/user")
   // },
 
+  // ADMIN
   {
     path: "/user",
     name: "user",
@@ -36,6 +37,14 @@ export default [
     name: "product-form",
     meta: { title: "Form Product", authRequired: false },
     component: () => import("../views/admin/product/form"),
+  },
+
+  // CLIENT
+  {
+    path: "/products",
+    name: "products",
+    meta: { title: "List of products", authRequired: false },
+    component: () => import("../views/client/index.vue"),
   },
 
   {

@@ -21,6 +21,9 @@ export default {
     return {
       type: layoutStore.leftSidebarType,
       isMenuCondensed: false,
+
+      // HARDCODED
+      userRole: 'user'
     };
   },
   computed: {
@@ -118,12 +121,7 @@ export default {
       <HorizontalTopbar :type="topbar" :width="layoutWidth" :mode="mode" />
       <HorizontalNav />
 
-      <SideBar
-        :is-condensed="isMenuCondensed"
-        :type="leftSidebarType"
-        :width="layoutWidth"
-        :mode="mode"
-      />
+      <SideBar :is-condensed="isMenuCondensed" :type="leftSidebarType" :width="layoutWidth" :mode="mode" />
       <!-- ============================================================== -->
       <!-- Start right Content here -->
       <!-- ============================================================== -->

@@ -53,6 +53,7 @@ export default {
         }
       }
     },
+
   },
   watch: {
     type: {
