@@ -9,16 +9,15 @@ export default {
     // });
 
     const user = JSON.parse(localStorage.getItem("user"));
+
     const filteredMenuItems = menuItems.filter(item => {
       // Mengecek jika item memiliki key label dan tidak memiliki key isTitle
-      if (user.user_role_name !== "Super Admin") {
+      if (user.user_role_name === "Super Admin") {
         return item.label && !item.isTitle;
       }
 
-      if (user.user_role_name === "Seller") {
-        return item.label === {
-          label: "Marketplace Seller",
-        } && !item.isTitle;
+      if (user.user_role_name === "Client") {
+        return item.label === "Marketplace"
       }
 
       return;

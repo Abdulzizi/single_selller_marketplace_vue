@@ -8,8 +8,9 @@ const filename = fileURLToPath(import.meta.url);
 const pathSegments = path.dirname(filename);
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '')
+  const env = loadEnv(mode, process.cwd(), "");
   return {
+    // base: env.VITE_APP_BASE_URL || "/single-seller-marketplace-app/dist/",
     plugins: [vue(), commonjs()],
     resolve: {
       alias: {
@@ -21,11 +22,10 @@ export default defineConfig(({ mode }) => {
       include: ["quill"],
     },
     preview: {
-      port: parseInt(env.VITE_APP_PREVIEW_PORT) || 8081
+      port: parseInt(env.VITE_APP_PREVIEW_PORT) || 8081,
     },
     server: {
-      port: parseInt(env.VITE_APP_PORT) || 8080
-    }
-  }
+      port: parseInt(env.VITE_APP_PORT) || 8080,
+    },
+  };
 });
-

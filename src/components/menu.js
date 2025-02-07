@@ -42,4 +42,10 @@ export const menuItems = [
       },
     ],
   },
+  {
+    id: 8,
+    label: "MarketPlace",
+    icon: "bx-store",
+    link: "/products",
+  },
 ];

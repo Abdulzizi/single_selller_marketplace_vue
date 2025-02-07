@@ -1,9 +1,10 @@
 import { useAuthStore } from "@/state/pinia";
+
 export default [
   {
     path: "/",
     name: "default",
-    meta: { title: "Dashboard", authRequired: false },
+    meta: { title: "Dashboard", authRequired: true },
     component: () => import("../views/dashboards/default"),
   },
   // {
@@ -17,25 +18,25 @@ export default [
   {
     path: "/user",
     name: "user",
-    meta: { title: "Master User", authRequired: false },
+    meta: { title: "Master User", authRequired: true },
     component: () => import("../views/admin/user"),
   },
   {
     path: "/product-category",
     name: "product-category",
-    meta: { title: "Master Product Category", authRequired: false },
+    meta: { title: "Master Product Category", authRequired: true },
     component: () => import("../views/admin/product-category"),
   },
   {
     path: "/product",
     name: "product",
-    meta: { title: "Master Products", authRequired: false },
+    meta: { title: "Master Products", authRequired: true },
     component: () => import("../views/admin/product"),
   },
   {
     path: "/product-form/:id?",
     name: "product-form",
-    meta: { title: "Form Product", authRequired: false },
+    meta: { title: "Form Product", authRequired: true },
     component: () => import("../views/admin/product/form"),
   },
 
@@ -43,13 +44,13 @@ export default [
   {
     path: "/products",
     name: "products",
-    meta: { title: "List of products", authRequired: false },
+    meta: { title: "List of products", authRequired: true },
     component: () => import("../views/client/index.vue"),
   },
   {
     path: "/product/:slug",
     name: "product-detail",
-    meta: { title: "Product Detail", authRequired: false },
+    meta: { title: "Product Detail", authRequired: true },
     component: () => import("../views/client/product-detail"),
   },
 
