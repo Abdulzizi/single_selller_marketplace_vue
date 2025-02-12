@@ -1,13 +1,13 @@
 <template>
     <Layout>
-        <PageHeader :title="product ? product.name : 'Product Not Found'" pageTitle="Client" />
+        <PageHeader :title="product ? product.name : 'Product Not Found'" pageTitle="Product Details" />
 
         <BContainer>
             <BRow v-if="product">
                 <!-- Product Image -->
                 <BCol md="6">
                     <BCard>
-                        <BCardImg :src="product.image" :alt="product.name" top />
+                        <BCardImg :src="product.photo_desktop_url" :alt="product.name" top />
                     </BCard>
                 </BCol>
 
@@ -15,12 +15,53 @@
                 <BCol md="6">
                     <BCard>
                         <BCardBody>
-                            <h3>{{ product.name }}</h3>
-                            <p class="text-muted">Category: {{ product.category }}</p>
-                            <h4 class="text-primary">${{ product.price }}</h4>
-                            <p>{{ product.description }}</p>
+                            <h3 class="mb-3">{{ product.name }}</h3>
+                            <p class="text-muted">Category: <strong>{{ product.product_category_name }}</strong></p>
+                            <h4 class="text-primary fw-bold">RP.{{ product.price.toLocaleString() }}</h4>
+                            <p class="mb-4">{{ product.description }}</p>
 
-                            <BButton variant="success" class="mt-3" @click="addToCart(product)">
+                            <!-- Product Quantity Control -->
+                            <div class="d-flex align-items-center mb-4">
+                                <h5 class="me-3 fw-bold">Quantity:</h5>
+                                <BButton variant="outline-danger" class="px-2 py-1" @click="decrementProductQuantity">
+                                    -
+                                </BButton>
+                                <span class="mx-3 fw-bold">{{ productQuantity }}</span>
+                                <BButton variant="outline-success" class="px-2 py-1" @click="incrementProductQuantity">
+                                    +
+                                </BButton>
+                            </div>
+
+                            <!-- Product Add-ons -->
+                            <div v-if="product.details && product.details.length > 0" class="mt-4">
+                                <h5 class="fw-bold">Available Add-ons:</h5>
+                                <BListGroup>
+                                    <BListGroupItem v-for="detail in product.details" :key="detail.id"
+                                        class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ detail.type }}:</strong> {{ detail.description }}
+                                            <span v-if="detail.price > 0" class="text-success"> (+RP.{{
+                                                detail.price.toLocaleString() }})</span>
+                                        </div>
+                                        <!-- Add-on Quantity Control -->
+                                        <div class="d-flex align-items-center">
+                                            <BButton variant="outline-danger" class="px-2 py-1"
+                                                @click="decrementQuantity(detail)">
+                                                -
+                                            </BButton>
+
+                                            <span class="mx-3 fw-bold">{{ detail.quantity }}</span>
+
+                                            <BButton variant="outline-success" class="px-2 py-1"
+                                                @click="incrementQuantity(detail)">
+                                                +
+                                            </BButton>
+                                        </div>
+                                    </BListGroupItem>
+                                </BListGroup>
+                            </div>
+
+                            <BButton variant="success" class="mt-4 w-100 py-2" @click="addToCart">
                                 <i class="bi bi-cart-plus me-2"></i> Add To Cart
                             </BButton>
                         </BCardBody>
@@ -30,9 +71,9 @@
 
             <!-- Product Not Found Message -->
             <BRow v-else>
-                <BCol>
-                    <h4>Product Not Found</h4>
-                    <p>The product you are looking for does not exist.</p>
+                <BCol class="text-center py-5">
+                    <h4 class="text-danger">Product Not Found</h4>
+                    <p class="text-muted">The product you are looking for does not exist.</p>
                 </BCol>
             </BRow>
         </BContainer>
@@ -40,28 +81,105 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import Layout from "@/layouts/main";
 import PageHeader from "@/components/page-header";
+import { useCartStore, useProductStore } from "../../../state/pinia";
 
-// Get current route
+import { useProgress } from "@/helpers/progress"; // Import custom progress function
+import {
+    showSuccessToast,
+    showErrorToast,
+} from "@/helpers/alert.js";
+
+const { startProgress, finishProgress, failProgress } = useProgress();
+
+
+const cartStore = useCartStore();
+const productStore = useProductStore();
 const route = useRoute();
 
-// Simulated Product List
-const products = ref([
-    { id: 1, name: "Smartphone", slug: "smartphone", category: "Electronics", price: 299, image: "https://picsum.photos/400?random=1", description: "A powerful smartphone with an excellent camera and long battery life." },
-    { id: 2, name: "Laptop", slug: "laptop", category: "Electronics", price: 899, image: "https://picsum.photos/400?random=2", description: "A high-performance laptop suitable for work and gaming." },
-    { id: 3, name: "T-Shirt", slug: "t-shirt", category: "Clothing", price: 19, image: "https://picsum.photos/400?random=3", description: "A comfortable and stylish cotton T-shirt available in various sizes." },
-    { id: 4, name: "Jacket", slug: "jacket", category: "Clothing", price: 79, image: "https://picsum.photos/400?random=4", description: "A warm and durable jacket perfect for cold weather." },
-]);
+const product = ref(null);
+const productQuantity = ref(1); // Default product quantity
 
-// Find the product by slug
-const product = computed(() => products.value.find(p => p.slug === route.params.slug));
+const fetchProduct = async () => {
+    startProgress();
 
-// Function to Add Product to Cart (Placeholder)
-const addToCart = (product) => {
-    console.log("Added to Cart:", product);
-    alert(`${product.name} added to cart!`);
+    try {
+        await productStore.getProductBySlug(route.params.slug);
+        product.value = productStore.productBySlug;
+
+        if (product.value.details) {
+            product.value.details = product.value.details.map(detail => ({
+                ...detail,
+                quantity: 0 // Default quantity for add-ons
+            }));
+        }
+        showSuccessToast("Product fetched successfully!");
+        finishProgress();
+    } catch (error) {
+        failProgress();
+        showErrorToast("Error fetching product", error);
+    }
 };
+
+// Product Quantity Controls
+const incrementProductQuantity = () => {
+    productQuantity.value++;
+};
+
+const decrementProductQuantity = () => {
+    if (productQuantity.value > 1) {
+        productQuantity.value--;
+    }
+};
+
+// Add-on Quantity Controls
+const incrementQuantity = (detail) => {
+    detail.quantity++;
+};
+
+const decrementQuantity = (detail) => {
+    if (detail.quantity > 0) {
+        detail.quantity--;
+    }
+};
+
+// Add to Cart
+const addToCart = () => {
+    if (product.value) {
+        const user = JSON.parse(localStorage.getItem("user"));
+        // console.log("user", user.id);
+
+        const selectedAddons = product.value.details.filter(detail => detail.quantity > 0);
+
+        const payload = [
+            // Main product
+            {
+                user_id: user?.id,
+                product_id: product.value.id,
+                quantity: productQuantity.value
+            },
+            // Add-ons
+            ...selectedAddons.map(addon => ({
+                user_id: user?.id,
+                product_id: product.value.id,
+                product_detail_id: addon.id,
+                quantity: addon.quantity
+            }))
+        ];
+
+        startProgress();
+        console.log("Added to Cart:", payload);
+
+        // Send each item separately
+        payload.forEach(item => cartStore.addCartItem(item).then(() => finishProgress()));
+        showSuccessToast("Product added to cart successfully!");
+    } else {
+        showErrorToast("Product not found", "Please try again later.");
+    }
+};
+
+onMounted(fetchProduct);
 </script>

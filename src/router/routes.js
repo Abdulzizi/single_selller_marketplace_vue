@@ -53,6 +53,12 @@ export default [
     meta: { title: "Product Detail", authRequired: true },
     component: () => import("../views/client/product-detail"),
   },
+  {
+    path: "/cart",
+    name: "cart",
+    meta: { title: "Cart", authRequired: true },
+    component: () => import("../views/client/cart"),
+  },
 
   {
     path: "/login",

@@ -1,5 +1,4 @@
 <script>
-import { useCartStore } from "@/state/pinia";
 /**
  * Horizontal-topbar component
  */
@@ -28,11 +27,11 @@ export default {
       this.$parent.toggleMenu();
     },
 
-    // CART
-    addProductToCart(product) {
-      const cartStore = useCartStore();
-      cartStore.addProductToCart(product);
+    // Navigate to Cart Page
+    goToCart() {
+      this.$router.push({ name: "cart" });
     },
+
     initFullScreen() {
       document.body.classList.toggle("fullscreen-enable");
       if (
@@ -195,9 +194,9 @@ export default {
           </BButton>
         </div>
 
-        <!-- CART -->
+        <!-- CART: Navigate to Cart Page -->
         <div class="dropdown d-none d-lg-inline-block ms-1">
-          <BButton variant="white" type="button" class="btn header-item noti-icon" @click="initFullScreen">
+          <BButton variant="white" type="button" class="btn header-item noti-icon" @click="goToCart">
             <i class="bx bx-cart"></i>
           </BButton>
         </div>

@@ -5,7 +5,8 @@ export const useProductStore = defineStore("product", {
   state: () => ({
     apiUrl: import.meta.env.VITE_APP_APIURL,
     products: [],
-    productById: "",
+    productById: {},
+    productBySlug: {},
     response: {
       status: null,
       message: null,
@@ -19,7 +20,9 @@ export const useProductStore = defineStore("product", {
     totalData: 0,
     current: 1,
     perpage: 5,
-    searchQuery: "",
+    productCategoryId: "",
+    minPrice: 0,
+    maxPrice: 0,
     maxImageSize: 3 * 1024 * 1024,
   }),
 
@@ -29,7 +32,13 @@ export const useProductStore = defineStore("product", {
     },
     async getProducts() {
       try {
-        const url = `${this.apiUrl}/api/v1/products?page=${this.current}&per_page=${this.perpage}&name=${this.searchQuery}`;
+        const productCategoryParam = this.productCategoryId.length
+          ? this.productCategoryId.join(",")
+          : "";
+
+        console.log("productCategoryParam", productCategoryParam);
+
+        const url = `${this.apiUrl}/api/v1/products?page=${this.current}&per_page=${this.perpage}&product_category_id=${productCategoryParam}&min_price=${this.minPrice}&max_price=${this.maxPrice}`;
         const res = await axios.get(url);
 
         this.products = res.data.data.list;
@@ -106,10 +115,27 @@ export const useProductStore = defineStore("product", {
       }
     },
 
+    async getProductBySlug(slug) {
+      try {
+        const res = await axios.get(`${this.apiUrl}/api/v1/product/${slug}`);
+
+        this.productBySlug = res.data.data;
+      } catch (error) {
+        console.log(error);
+        this.response = {
+          status: error.response?.status || 500,
+          message:
+            error.response?.data?.message || "Failed to fetch product by slug.",
+          list: error.response?.data?.errors || [],
+        };
+      }
+    },
+
     async updateProduct(product) {
       try {
         console.log(product);
         const res = await axios.put(`${this.apiUrl}/api/v1/products/`, product);
+
         console.log(res);
         this.response = {
           status: res.status,
@@ -118,6 +144,10 @@ export const useProductStore = defineStore("product", {
       } catch (error) {
         console.log(error);
       }
+    },
+
+    setProductCategories(categories) {
+      this.productCategoryId = categories;
     },
 
     resetState() {
