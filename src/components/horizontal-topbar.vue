@@ -2,6 +2,10 @@
 /**
  * Horizontal-topbar component
  */
+
+import { useCartStore } from "@/state/pinia";
+import { mapState } from "pinia";
+
 export default {
   props: {
     type: {
@@ -16,6 +20,25 @@ export default {
       type: String,
       required: true,
     },
+  },
+  computed: {
+    ...mapState(useCartStore, ["cartItems"]),
+    userRole() {
+      const user = localStorage.getItem("user");
+      return user ? JSON.parse(user).user_role_name || "" : "";
+    },
+    user() {
+      return JSON.parse(localStorage.getItem("user")) || {};
+    },
+    userName() {
+      return this.user.name || "Guest"; // nama default
+    },
+    userAvatar() {
+      return this.user.photo_url || null;
+    },
+    defaultAvatar() {
+      return require("@/assets/images/users/avatar-1.jpg");
+    }
   },
   components: {},
   data() {
@@ -132,7 +155,12 @@ export default {
       },
     },
   },
+  onMounted() {
+    const cartStore = useCartStore();
+    cartStore.fetchCartItems();
+  },
 };
+
 </script>
 
 <template>
@@ -188,26 +216,29 @@ export default {
         </BDropdown>
 
         <!-- FULLSCREEN TOGGLE -->
-        <div class="dropdown d-none d-lg-inline-block ms-1">
+        <div class="dropdown d-none d-lg-inline-block ms-1" v-if="userRole !== 'Client'">
           <BButton variant="white" type="button" class="btn header-item noti-icon" @click="initFullScreen">
             <i class="bx bx-fullscreen"></i>
           </BButton>
         </div>
 
         <!-- CART: Navigate to Cart Page -->
-        <div class="dropdown d-none d-lg-inline-block ms-1">
+        <div class="dropdown d-none d-lg-inline-block ms-1 position-relative">
           <BButton variant="white" type="button" class="btn header-item noti-icon" @click="goToCart">
             <i class="bx bx-cart"></i>
+            <span v-if="cartItems.length > 0" class="cart-badge">
+              {{ cartItems.length }}
+            </span>
           </BButton>
         </div>
 
         <BDropdown right variant="black" toggle-class="header-item">
           <template v-slot:button-content>
-            <img class="rounded-circle header-profile-user" src="@/assets/images/users/avatar-1.jpg"
-              alt="Header Avatar" />
-            <span class="d-none d-xl-inline-block ms-1"> Noorvicki </span>
+            <img class="rounded-circle header-profile-user" :src="userAvatar || defaultAvatar" alt="Header Avatar" />
+            <span class="d-none d-xl-inline-block ms-1">{{ userName }}</span>
             <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
           </template>
+
           <BDropdownItem>
             <router-link to="#" v-slot="{ navigate }" custom>
               <span @click="navigate" @keypress.enter="navigate">
@@ -216,13 +247,34 @@ export default {
               </span>
             </router-link>
           </BDropdownItem>
+
           <BDropdownDivider></BDropdownDivider>
+
           <router-link to="/logout" class="dropdown-item text-danger">
             <i class="bx bx-power-off font-size-16 align-middle me-1 text-danger"></i>
             Logout
           </router-link>
         </BDropdown>
+
       </div>
     </div>
   </header>
 </template>
+
+<style scoped>
+.cart-badge {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: red;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+</style>

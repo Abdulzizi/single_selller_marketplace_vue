@@ -4,7 +4,7 @@ import axios from "axios";
 export const useCartStore = defineStore("cart", {
   state: () => ({
     apiUrl: import.meta.env.VITE_APP_APIURL,
-    cartItems: [],
+    cartItems: JSON.parse(localStorage.getItem("cartItems")) || [],
     cartTotal: 0,
     totalData: 0,
     current: 1,
@@ -32,6 +32,8 @@ export const useCartStore = defineStore("cart", {
         this.cartItems = res.data.data.list;
         // console.log(this.cartItems);
         this.totalData = res.data.data.meta.total;
+
+        localStorage.setItem("cartItems", JSON.stringify(this.cartItems));
       } catch (error) {
         this.response = {
           status: error.response?.status || 500,
@@ -45,11 +47,11 @@ export const useCartStore = defineStore("cart", {
     async addCartItem(item) {
       try {
         const res = await axios.post(`${this.apiUrl}/api/v1/carts`, item);
-        this.response = {
-          status: res.status,
-          message: res.data.message,
-        };
+        this.response = { status: res.status, message: res.data.message };
+
         await this.fetchCartItems();
+
+        localStorage.setItem("cartItems", JSON.stringify(this.cartItems));
       } catch (error) {
         this.response = {
           status: error.response?.status || 500,
@@ -64,6 +66,8 @@ export const useCartStore = defineStore("cart", {
       try {
         await axios.delete(`${this.apiUrl}/api/v1/carts/${id}`);
         await this.fetchCartItems();
+
+        localStorage.setItem("cartItems", JSON.stringify(this.cartItems));
       } catch (error) {
         this.response = {
           status: error.response?.status || 500,
@@ -77,11 +81,11 @@ export const useCartStore = defineStore("cart", {
     async updateCartItem(item) {
       try {
         const res = await axios.put(`${this.apiUrl}/api/v1/carts`, item);
-        this.response = {
-          status: res.status,
-          message: res.data.message,
-        };
+        this.response = { status: res.status, message: res.data.message };
+
         await this.fetchCartItems();
+
+        localStorage.setItem("cartItems", JSON.stringify(this.cartItems));
       } catch (error) {
         this.response = {
           status: error.response?.status || 500,
@@ -107,6 +111,8 @@ export const useCartStore = defineStore("cart", {
         message: null,
         list: [],
       };
+
+      localStorage.removeItem("cartItems");
     },
   },
 });

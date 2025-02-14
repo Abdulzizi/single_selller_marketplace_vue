@@ -33,6 +33,8 @@
                         <button @click="applyFilters" class="btn btn-primary mt-3 w-100 fw-bold">
                             Apply Filters
                         </button>
+
+                        <a href="#" class="mt-2 text-muted fst-italic" @click.prevent="resetFilters">Reset filters</a>
                     </BCardBody>
                 </BCard>
             </BCol>
@@ -73,7 +75,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import Layout from "@/layouts/main";
 import PageHeader from "@/components/page-header";
 import { useProductStore, useProductCategoryStore, useCartStore } from "../../state/pinia";
@@ -151,25 +153,56 @@ const applyFilters = async () => {
     }
 };
 
+const resetFilters = () => {
+    selectedCategories.value = [];
+    minPrice.value = productStore.minPrice;
+    maxPrice.value = productStore.maxPrice;
+    filteredProducts.value = [...products.value];
+    showSuccessToast("Filters reset successfully.");
+};
+
 const viewDetails = (product) => {
     router.push({ name: "product-detail", params: { slug: product.slug } });
 };
 
 const addToCart = (product) => {
-    cartStore.addProductToCart(product);
-    showSuccessToast("Added to cart!");
+    // console.log(product);
+
+    if (product) {
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        const payload = [
+            // product
+            {
+                user_id: user?.id,
+                product_id: product.id,
+                quantity: 1
+            }
+        ];
+
+        startProgress();
+        console.log("Added to Cart:", payload);
+
+        // Send each item separately
+        payload.forEach(item => cartStore.addCartItem(item).then(() => finishProgress()));
+        showSuccessToast("Product added to cart successfully!");
+    } else {
+        showErrorToast("Product not found", "Please try again later.");
+    }
 };
 
-watch(selectedCategories, applyFilters, { deep: true });
-watch(minPrice, (newVal) => {
-    productStore.minPrice = newVal;
-    applyFilters();
-});
 
-watch(maxPrice, (newVal) => {
-    productStore.maxPrice = newVal;
-    applyFilters();
-});
+// UNCOMMECT JIKA INGIN REACTIVE
+// watch(selectedCategories, applyFilters, { deep: true });
+// watch(minPrice, (newVal) => {
+//     productStore.minPrice = newVal;
+//     applyFilters();
+// });
+
+// watch(maxPrice, (newVal) => {
+//     productStore.maxPrice = newVal;
+//     applyFilters();
+// });
 
 
 onMounted(async () => {

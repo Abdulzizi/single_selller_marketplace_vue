@@ -25,8 +25,8 @@
 
                                 <!-- Add-on Details -->
                                 <div v-if="item.product_detail" class="mt-2">
-                                    <span class="badge bg-info text-dark p-2">
-                                        ➕ Add-on: {{ item.product_detail.type }} (+RP.{{
+                                    <span class="badge bg-success text-white p-2">
+                                        + Add-on: {{ item.product_detail.type }} (+RP.{{
                                             item.product_detail.price.toLocaleString() }})
                                     </span>
                                 </div>
@@ -34,12 +34,12 @@
 
                             <!-- Quantity Controls -->
                             <div class="d-flex align-items-center">
-                                <BButton variant="outline-secondary" size="sm" class="rounded px-2 py-1"
+                                <BButton variant="outline-danger" size="sm" class="rounded px-2 py-1"
                                     @click="updateQuantity(item, item.quantity - 1)">
                                     -
                                 </BButton>
                                 <span class="mx-3 fw-bold fs-5">{{ item.quantity }}</span>
-                                <BButton variant="outline-secondary" size="sm" class="rounded px-2 py-1"
+                                <BButton variant="outline-success" size="sm" class="rounded px-2 py-1"
                                     @click="updateQuantity(item, item.quantity + 1)">
                                     +
                                 </BButton>
@@ -77,13 +77,15 @@
                                 <strong class="text-success fs-5">RP.{{ grandTotal.toLocaleString() }}</strong>
                             </div>
 
-                            <BButton variant="success" block class="mt-3 py-2 fs-6 shadow-sm">
-                                ✅ Proceed to Checkout
-                            </BButton>
+                            <div class="d-flex flex-column justify-content-end mt-3">
+                                <BButton variant="success" class="me-2 py-2 fs-6 shadow-sm" @click="navigateToCheckout">
+                                    ✅ Proceed to Checkout
+                                </BButton>
+                                <BButton variant="link" class="text-muted align-self-end" @click="navigateToProducts">
+                                    ← Continue Shopping
+                                </BButton>
+                            </div>
 
-                            <BButton variant="link" class="text-muted" @click="navigateToProducts">
-                                ← Continue Shopping
-                            </BButton>
                         </BCardBody>
                     </BCard>
                 </BCol>
@@ -91,7 +93,6 @@
         </BContainer>
     </Layout>
 </template>
-
 
 <script setup>
 import { computed, onMounted, ref } from "vue";
@@ -160,6 +161,11 @@ const totalPrice = computed(() => {
 const navigateToProducts = () => {
     window.location.href = "/products";
 }
+
+const navigateToCheckout = () => {
+    alert("Checkout not implemented yet");
+    // window.location.href = "/checkout";
+};
 
 const deliveryFee = computed(() => (cartItems.value.length > 0 ? 15000 : 0));
 const grandTotal = computed(() => totalPrice.value + deliveryFee.value);

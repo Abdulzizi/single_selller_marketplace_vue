@@ -59,6 +59,18 @@ export default [
     meta: { title: "Cart", authRequired: true },
     component: () => import("../views/client/cart"),
   },
+  {
+    path: "/checkout",
+    name: "checkout",
+    meta: { title: "Checkout", authRequired: true },
+    component: () => import("../views/client/checkout"),
+  },
+  {
+    path: "/checkout-success",
+    name: "checkout-success",
+    meta: { title: "Checkout Success", authRequired: true },
+    component: () => import("../views/client/checkout-success"),
+  },
 
   {
     path: "/login",

@@ -64,6 +64,11 @@ export const useUserStore = defineStore("user", {
       }
     },
 
+    async getUserRole() {
+      const user = localStorage.getItem("user");
+      return user ? JSON.parse(user).user_role_name || "" : "";
+    },
+
     async changePage(newPage) {
       this.current = newPage;
       await this.getUsers();
