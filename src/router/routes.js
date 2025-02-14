@@ -65,12 +65,12 @@ export default [
     meta: { title: "Checkout", authRequired: true },
     component: () => import("../views/client/checkout"),
   },
-  {
-    path: "/checkout-success",
-    name: "checkout-success",
-    meta: { title: "Checkout Success", authRequired: true },
-    component: () => import("../views/client/checkout-success"),
-  },
+  // {
+  //   path: "/checkout-success",
+  //   name: "checkout-success",
+  //   meta: { title: "Checkout Success", authRequired: true },
+  //   component: () => import("../views/client/checkout-success"),
+  // },
 
   {
     path: "/login",

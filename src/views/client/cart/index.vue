@@ -96,6 +96,8 @@
 
 <script setup>
 import { computed, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+
 import { useCartStore } from "@/state/pinia";
 import Layout from "@/layouts/main";
 import PageHeader from "@/components/page-header";
@@ -105,6 +107,7 @@ import { showErrorToast, showSuccessToast } from "@/helpers/alert.js";
 const { startProgress, finishProgress, failProgress } = useProgress();
 const cartStore = useCartStore();
 const cartItems = ref([]);
+const router = useRouter();
 
 const getCarts = async () => {
     try {
@@ -159,12 +162,14 @@ const totalPrice = computed(() => {
 });
 
 const navigateToProducts = () => {
-    window.location.href = "/products";
+    // window.location.href = "/products";
+    router.push("/products");
 }
 
 const navigateToCheckout = () => {
-    alert("Checkout not implemented yet");
+    // alert("Checkout not implemented yet");
     // window.location.href = "/checkout";
+    router.push("/checkout");
 };
 
 const deliveryFee = computed(() => (cartItems.value.length > 0 ? 15000 : 0));
