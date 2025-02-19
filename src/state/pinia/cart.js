@@ -96,6 +96,43 @@ export const useCartStore = defineStore("cart", {
       }
     },
 
+    async clearCart() {
+      try {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user || !user.id) {
+          throw new Error("User ID is required");
+        }
+
+        // Fetch current cart items from the store
+        await this.fetchCartItems(); // Ensure you have the latest cart data
+
+        if (this.cartItems.length === 0) {
+          this.response = { status: 404, message: "No cart items to clear." };
+          return;
+        }
+
+        // Iterate over cart items and remove each
+        for (const item of this.cartItems) {
+          await this.removeCartItem(item.id);
+        }
+
+        // Clear local storage and update the cart state
+        localStorage.removeItem("cartItems");
+        this.cartItems = [];
+
+        this.response = {
+          status: 200,
+          message: "All cart items removed successfully.",
+        };
+      } catch (error) {
+        this.response = {
+          status: error.response?.status || 500,
+          message: error.response?.data?.message || "Failed to clear cart.",
+          list: error.response?.data?.errors || [],
+        };
+      }
+    },
+
     async changePage(newPage) {
       this.current = newPage;
       await this.fetchCartItems();

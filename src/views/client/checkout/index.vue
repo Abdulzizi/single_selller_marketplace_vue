@@ -62,25 +62,27 @@
                         <div class="card-body">
                             <h5 class="mb-4 fw-bold text-success">Order Summary</h5>
                             <div v-for="item in cartItems" :key="item.id" class="d-flex align-items-center mb-3">
-                                <img :src="item.image" alt="Product" class="rounded me-3 order-summary-image" width="60"
-                                    height="60" />
+                                <img :src="item.product.photo_desktop_url" alt="Product"
+                                    class="rounded me-3 order-summary-image" width="60" height="60" />
                                 <div class="flex-grow-1">
-                                    <h6 class="fw-bold mb-1">{{ item.name }}</h6>
-                                    <p class="text-muted small mb-0">{{ item.category }}</p>
+                                    <h6 class="fw-bold mb-1">{{ item.product.name }}</h6>
+                                    <p class="text-muted small mb-0">{{ item.product.product_category_name }}</p>
                                 </div>
-                                <span class="fw-bold">RP.{{ item.price.toLocaleString() }}</span>
+                                <span class="fw-bold">{{
+                                    formatIDR(item.product.price * item.quantity)
+                                    }}</span>
                             </div>
                             <div class="d-flex justify-content-between mt-3 border-top pt-3">
                                 <span>Subtotal:</span>
-                                <span class="fw-bold">RP.{{ subtotal.toLocaleString() }}</span>
+                                <span class="fw-bold">{{ formatIDR(subtotal) }}</span>
                             </div>
                             <div class="d-flex justify-content-between">
-                                <span>Tax (10%):</span>
-                                <span class="fw-bold">RP.{{ tax.toLocaleString() }}</span>
+                                <span>Tax (12%):</span>
+                                <span class="fw-bold">{{ formatIDR(tax) }}</span>
                             </div>
                             <div class="d-flex justify-content-between border-top pt-3 mt-3">
                                 <span class="fw-bold">Total:</span>
-                                <span class="fw-bold text-danger">RP.{{ total.toLocaleString() }}</span>
+                                <span class="fw-bold text-danger">{{ formatIDR(total) }}</span>
                             </div>
                             <BButton variant="success" class="mt-4 w-100 fw-bold py-2 checkout-btn" @click="checkout">
                                 Confirm & Pay
@@ -94,14 +96,30 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import Layout from "@/layouts/main";
 import PageHeader from "@/components/page-header";
+import { useRouter } from "vue-router";
 
-const cartItems = ref([
-    { id: 1, name: "Gaming Mouse", category: "Accessories", price: 250000, image: "https://via.placeholder.com/80" },
-    { id: 2, name: "Mechanical Keyboard", category: "Accessories", price: 600000, image: "https://via.placeholder.com/80" },
-]);
+const router = useRouter();
+
+import { useOrderStore, useCartStore } from "@/state/pinia";
+import { useProgress } from "@/helpers/progress";
+import { showErrorToast, showSuccessToast } from "@/helpers/alert.js";
+
+const { startProgress, finishProgress, failProgress } = useProgress();
+
+const cartItems = ref([]);
+const orderStore = useOrderStore();
+const cartStore = useCartStore();
+
+const getCartItemsFromLocalStorage = () => {
+    const localStorageCartItems = localStorage.getItem("cartItems");
+    if (localStorageCartItems) {
+        cartItems.value = JSON.parse(localStorageCartItems);
+        // console.log("Cart items:", cartItems.value);
+    }
+};
 
 const formModel = ref({
     address: "",
@@ -110,13 +128,83 @@ const formModel = ref({
     paymentMethod: ""
 });
 
-const subtotal = computed(() => cartItems.value.reduce((sum, item) => sum + item.price, 0));
-const tax = computed(() => subtotal.value * 0.1);
+const subtotal = computed(() => cartItems.value.reduce((sum, item) => sum + item.product.price, 0));
+const tax = computed(() => subtotal.value * 0.12);
 const total = computed(() => subtotal.value + tax.value);
+const formatIDR = (number) => IDRFormatter.format(number);
 
-const checkout = () => {
-    alert(`Proceeding with payment method: ${formModel.value.paymentMethod}`);
+const IDRFormatter = new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+});
+
+// Prepare payload
+const orderPayload = computed(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || !user.id) {
+        console.error("User ID not found");
+        return null;
+    }
+
+    if (!cartItems.value.length) {
+        console.error("Cart is empty");
+        return null;
+    }
+
+    return {
+        user_id: user.id,
+        product_detail_id: cartItems.value[0].product.product_detail_id || null,
+        details: cartItems.value.map(item => {
+            return {
+                product_id: item.product.id,
+                quantity: item.quantity,
+                is_added: true
+            };
+        })
+    };
+});
+
+const checkout = async () => {
+    if (!formModel.value.paymentMethod) {
+        showErrorToast("Please select a payment method.");
+        return;
+    }
+
+    const payload = orderPayload.value;
+    if (!payload) {
+        showErrorToast("Failed to create order payload.");
+        return;
+    }
+
+    console.log("Checkout Payload:", JSON.stringify(payload, null, 2));
+
+    try {
+        startProgress();
+        await orderStore.addOrder(payload);
+
+        if (orderStore.response.status === 200 || orderStore.response.status === 201) {
+            await cartStore.clearCart();
+
+            finishProgress();
+            showSuccessToast("Order placed successfully!");
+
+            router.push("/checkout-success");
+        } else {
+            failProgress();
+            showErrorToast("Failed to place order: " + orderStore.response.message);
+        }
+    } catch (error) {
+        failProgress();
+        console.error("Checkout error:", error);
+        showErrorToast("An error occurred during checkout.");
+    }
 };
+
+onMounted(() => {
+    getCartItemsFromLocalStorage();
+});
 </script>
 
 <style scoped>

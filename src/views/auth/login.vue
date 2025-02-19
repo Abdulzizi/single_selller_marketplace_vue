@@ -12,11 +12,7 @@
                 </div>
               </BCol>
               <BCol cols="5" class="align-self-end">
-                <img
-                  src="@/assets/images/profile-img.png"
-                  alt
-                  class="img-fluid"
-                />
+                <img src="@/assets/images/profile-img.png" alt class="img-fluid" />
               </BCol>
             </BRow>
           </div>
@@ -32,41 +28,16 @@
             </div>
 
             <BForm class="p-2">
-              <BFormGroup
-                class="mb-3"
-                id="input-group-1"
-                label="Email"
-                label-for="input-1"
-              >
-                <BFormInput
-                  id="input-1"
-                  v-model="formModel.email"
-                  type="text"
-                  placeholder="Enter email"
-                ></BFormInput>
+              <BFormGroup class="mb-3" id="input-group-1" label="Email" label-for="input-1">
+                <BFormInput id="input-1" v-model="formModel.email" type="text" placeholder="Enter email"></BFormInput>
               </BFormGroup>
 
-              <BFormGroup
-                class="mb-3"
-                id="input-group-2"
-                label="Password"
-                label-for="input-2"
-              >
-                <BFormInput
-                  id="input-2"
-                  v-model="formModel.password"
-                  type="password"
-                  placeholder="Enter password"
-                ></BFormInput>
+              <BFormGroup class="mb-3" id="input-group-2" label="Password" label-for="input-2">
+                <BFormInput id="input-2" v-model="formModel.password" type="password" placeholder="Enter password">
+                </BFormInput>
               </BFormGroup>
               <div class="mt-3 d-grid">
-                <BButton
-                  type="submit"
-                  @click="login"
-                  variant="primary"
-                  class="btn-block"
-                  >Log In</BButton
-                >
+                <BButton type="submit" @click="login" variant="primary" class="btn-block">Log In</BButton>
               </div>
               <!-- <div class="mt-4 text-center">
                 <h5 class="font-size-14 mb-3">Sign in with</h5>
@@ -98,12 +69,12 @@
                     </BLink>
                   </li>
                 </ul>
-              </div>
+              </div> -->
               <div class="mt-4 text-center">
                 <router-link to="/forgot-password" class="text-muted">
                   <i class="mdi mdi-lock me-1"></i> Forgot your password?
                 </router-link>
-              </div> -->
+              </div>
             </BForm>
           </BCardBody>
         </BCard>

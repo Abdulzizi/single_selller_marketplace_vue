@@ -75,5 +75,24 @@ export const useAuthStore = defineStore("auth", {
     getUser() {
       return JSON.parse(localStorage.getItem("user") || "");
     },
+
+    async forgotPassword(email) {
+      try {
+        const res = await axios.post(`${this.apiUrl}/api/v1/forgot-password`, {
+          email,
+        });
+
+        this.response = {
+          status: res.status,
+          message: res.data.message,
+        };
+      } catch (error) {
+        this.response = {
+          status: error.response?.status,
+          message: error.message,
+          error: error.response?.data?.errors || [],
+        };
+      }
+    },
   },
 });
