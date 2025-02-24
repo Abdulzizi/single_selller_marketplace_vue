@@ -7,7 +7,7 @@
                 <!-- Product Image -->
                 <BCol md="6">
                     <BCard>
-                        <BCardImg :src="product.photo_desktop_url" :alt="product.name" top />
+                        <BCardImg :src="product.photo_desktop_url" :alt="product.name" class="zoom-effect" top />
                     </BCard>
                 </BCol>
 
@@ -17,7 +17,7 @@
                         <BCardBody>
                             <h3 class="mb-3">{{ product.name }}</h3>
                             <p class="text-muted">Category: <strong>{{ product.product_category_name }}</strong></p>
-                            <h4 class="text-primary fw-bold">RP.{{ product.price.toLocaleString() }}</h4>
+                            <h4 class="highlighted-price">RP.{{ product.price.toLocaleString() }}</h4>
                             <p class="mb-4">{{ product.description }}</p>
 
                             <!-- Product Quantity Control -->
@@ -33,7 +33,7 @@
                             </div>
 
                             <!-- Product Add-ons -->
-                            <div v-if="product.details && product.details.length > 0" class="mt-4">
+                            <!-- <div v-if="product.details && product.details.length > 0" class="mt-4">
                                 <h5 class="fw-bold">Available Add-ons:</h5>
                                 <BListGroup>
                                     <BListGroupItem v-for="detail in product.details" :key="detail.id"
@@ -43,7 +43,7 @@
                                             <span v-if="detail.price > 0" class="text-success"> (+RP.{{
                                                 detail.price.toLocaleString() }})</span>
                                         </div>
-                                        <!-- Add-on Quantity Control -->
+                                        
                                         <div class="d-flex align-items-center">
                                             <BButton variant="outline-danger" class="px-2 py-1"
                                                 @click="decrementQuantity(detail)">
@@ -59,9 +59,25 @@
                                         </div>
                                     </BListGroupItem>
                                 </BListGroup>
+                            </div> -->
+
+                            <!-- Product detail / Addon -->
+                            <div v-if="product.details && product.details.length > 0" class="mt-4">
+                                <h5 class="fw-bold">Available Add-ons:</h5>
+                                <BListGroup>
+                                    <BListGroupItem v-for="detail in product.details" :key="detail.id">
+                                        <div class="d-flex align-items-center">
+                                            <BFormCheckbox v-model="detail.selected">
+                                                <strong>{{ detail.type }}</strong>: {{ detail.description }}
+                                                <span v-if="detail.price > 0" class="text-success"> (+RP.{{
+                                                    detail.price.toLocaleString() }})</span>
+                                            </BFormCheckbox>
+                                        </div>
+                                    </BListGroupItem>
+                                </BListGroup>
                             </div>
 
-                            <BButton variant="success" class="mt-4 w-100 py-2" @click="addToCart">
+                            <BButton variant="success" class="d-none d-md-block mt-4 w-100 py-2" @click="addToCart">
                                 <i class="bi bi-cart-plus me-2"></i> Add To Cart
                             </BButton>
                         </BCardBody>
@@ -76,6 +92,13 @@
                     <p class="text-muted">The product you are looking for does not exist.</p>
                 </BCol>
             </BRow>
+
+            <!-- Sticky Add-to-Cart Button -->
+            <div class="d-md-none sticky-add-to-cart">
+                <BButton variant="success" class="w-100 py-2" :disabled="loading" @click="addToCart">
+                    <i class="bi bi-cart-plus me-2"></i> Add To Cart
+                </BButton>
+            </div>
         </BContainer>
     </Layout>
 </template>
@@ -116,7 +139,6 @@ const fetchProduct = async () => {
                 quantity: 0 // Default quantity for add-ons
             }));
         }
-        showSuccessToast("Product fetched successfully!");
         finishProgress();
     } catch (error) {
         failProgress();
@@ -132,17 +154,6 @@ const incrementProductQuantity = () => {
 const decrementProductQuantity = () => {
     if (productQuantity.value > 1) {
         productQuantity.value--;
-    }
-};
-
-// Add-on Quantity Controls
-const incrementQuantity = (detail) => {
-    detail.quantity++;
-};
-
-const decrementQuantity = (detail) => {
-    if (detail.quantity > 0) {
-        detail.quantity--;
     }
 };
 
@@ -175,7 +186,7 @@ const addToCart = () => {
 
         // Send each item separately
         payload.forEach(item => cartStore.addCartItem(item).then(() => finishProgress()));
-        showSuccessToast("Product added to cart successfully!");
+        showSuccessToast(`${product.value.name} added to cart successfully!`);
     } else {
         showErrorToast("Product not found", "Please try again later.");
     }
@@ -183,3 +194,35 @@ const addToCart = () => {
 
 onMounted(fetchProduct);
 </script>
+
+<style scoped>
+.zoom-effect {
+    transition: transform 0.3s ease-in-out;
+}
+
+.zoom-effect:hover {
+    transform: scale(1.1);
+}
+
+.highlighted-price {
+    font-size: 1.5rem;
+    color: #d9534f;
+    font-weight: bold;
+}
+
+.quantity-input {
+    width: 80px;
+    text-align: center;
+}
+
+.sticky-add-to-cart {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 10px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+</style>

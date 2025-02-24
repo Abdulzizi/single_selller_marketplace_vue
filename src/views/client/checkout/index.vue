@@ -2,98 +2,125 @@
     <Layout>
         <PageHeader title="Checkout" pageTitle="Your Cart" />
 
-        <div class="container py-5">
-            <div class="row g-4">
-                <!-- Delivery & Payment Form -->
-                <div class="col-lg-8">
-                    <div class="card delivery-payment-card shadow-sm border-0 rounded-4 mb-4 p-4">
-                        <div class="card-body">
-                            <h5 class="mb-4 fw-bold text-primary">Delivery Information</h5>
-                            <BForm>
-                                <BRow class="mb-3">
-                                    <label class="col-md-3 col-form-label fw-semibold"
-                                        for="form-address">Address</label>
-                                    <BCol md="9">
-                                        <input class="form-control" id="form-address" placeholder="Enter your address"
-                                            v-model="formModel.address" />
-                                    </BCol>
-                                </BRow>
-                                <BRow class="mb-3">
-                                    <label class="col-md-3 col-form-label fw-semibold" for="form-city">City</label>
-                                    <BCol md="9">
-                                        <input class="form-control" id="form-city" placeholder="Enter your city"
-                                            v-model="formModel.city" />
-                                    </BCol>
-                                </BRow>
-                                <BRow class="mb-3">
-                                    <label class="col-md-3 col-form-label fw-semibold"
-                                        for="form-postcode">Postcode</label>
-                                    <BCol md="9">
-                                        <input class="form-control" id="form-postcode" placeholder="Enter your postcode"
-                                            v-model="formModel.postcode" />
-                                    </BCol>
-                                </BRow>
-                            </BForm>
-                        </div>
-                    </div>
+        <BRow class="g-4">
+            <!-- Delivery & Payment Form -->
+            <BCol lg="8">
+                <BCard class="shadow-sm border-0 rounded-4 mb-4 p-4">
+                    <BCardBody>
+                        <h5 class="mb-4 fw-bold text-primary">Delivery Information</h5>
+                        <BForm>
+                            <BRow class="mb-3">
+                                <BCol md="3" class="fw-semibold">Full Name</BCol>
+                                <BCol md="9">
+                                    <BFormInput id="form-name" v-model="formModel.fullName"
+                                        placeholder="Enter your full name" />
+                                </BCol>
+                            </BRow>
+                            <BRow class="mb-3">
+                                <BCol md="3" class="fw-semibold">Street Address</BCol>
+                                <BCol md="9">
+                                    <BFormInput id="form-street" v-model="formModel.street"
+                                        placeholder="Enter your street address" />
+                                </BCol>
+                            </BRow>
+                            <BRow class="mb-3">
+                                <BCol md="3" class="fw-semibold">Apartment/Unit</BCol>
+                                <BCol md="9">
+                                    <BFormInput id="form-apartment" v-model="formModel.apartment"
+                                        placeholder="Apartment, suite, unit, etc. (optional)" />
+                                </BCol>
+                            </BRow>
+                            <BRow class="mb-3">
+                                <BCol md="3" class="fw-semibold">City</BCol>
+                                <BCol md="9">
+                                    <BFormInput id="form-city" v-model="formModel.city" placeholder="Enter your city" />
+                                </BCol>
+                            </BRow>
+                            <BRow class="mb-3">
+                                <BCol md="3" class="fw-semibold">Postcode</BCol>
+                                <BCol md="9">
+                                    <BFormInput id="form-postcode" v-model="formModel.postcode"
+                                        placeholder="Enter your postcode" />
+                                </BCol>
+                            </BRow>
+                            <BRow class="mb-3">
+                                <BCol md="3" class="fw-semibold">Country</BCol>
+                                <BCol md="9">
+                                    <BFormInput id="form-postcode" v-model="formModel.postcode"
+                                        placeholder="Enter your country" />
+                                </BCol>
 
-                    <div class="card delivery-payment-card shadow-sm border-0 rounded-4 p-4">
-                        <div class="card-body">
-                            <h5 class="mb-4 fw-bold text-primary">Payment Method</h5>
-                            <BForm>
-                                <BRow>
-                                    <BCol md="12">
-                                        <BFormRadio v-model="formModel.paymentMethod" value="Credit Card">Credit Card
-                                        </BFormRadio>
-                                        <BFormRadio v-model="formModel.paymentMethod" value="Bank Transfer">Bank
-                                            Transfer</BFormRadio>
-                                        <BFormRadio v-model="formModel.paymentMethod" value="E-Wallet">E-Wallet
-                                        </BFormRadio>
+                                <!-- <BCol md="9">
+                                    <BFormSelect id="form-country" v-model="formModel.country"
+                                        :options="countryOptions" />
+                                </BCol> -->
+                            </BRow>
+                        </BForm>
+                    </BCardBody>
+                </BCard>
+
+                <BCard class="shadow-sm border-0 rounded-4 p-4">
+                    <BCardBody>
+                        <h5 class="mb-4 fw-bold text-primary">Payment Method</h5>
+                        <BForm>
+                            <BFormRadioGroup v-model="formModel.paymentMethod">
+                                <BFormRadio value="Credit Card">Credit Card</BFormRadio>
+                                <BFormRadio value="Bank Transfer">Bank Transfer</BFormRadio>
+                                <BFormRadio value="E-Wallet">E-Wallet</BFormRadio>
+                            </BFormRadioGroup>
+
+                            <div v-if="formModel.paymentMethod === 'Credit Card'" class="mt-3">
+                                <BFormInput id="card-number" v-model="formModel.cardNumber" placeholder="Card Number" />
+                                <BRow class="mt-3">
+                                    <BCol md="6">
+                                        <BFormInput id="card-expiry" v-model="formModel.cardExpiry"
+                                            placeholder="MM/YY" />
+                                    </BCol>
+                                    <BCol md="6">
+                                        <BFormInput id="card-cvv" v-model="formModel.cardCVV" placeholder="CVV" />
                                     </BCol>
                                 </BRow>
-                            </BForm>
-                        </div>
-                    </div>
-                </div>
+                            </div>
 
-                <!-- Order Summary -->
-                <div class="col-lg-4">
-                    <div class="card shadow-lg border-0 rounded-4 p-4">
-                        <div class="card-body">
-                            <h5 class="mb-4 fw-bold text-success">Order Summary</h5>
-                            <div v-for="item in cartItems" :key="item.id" class="d-flex align-items-center mb-3">
-                                <img :src="item.product.photo_desktop_url" alt="Product"
-                                    class="rounded me-3 order-summary-image" width="60" height="60" />
-                                <div class="flex-grow-1">
-                                    <h6 class="fw-bold mb-1">{{ item.product.name }}</h6>
-                                    <p class="text-muted small mb-0">{{ item.product.product_category_name }}</p>
-                                </div>
-                                <span class="fw-bold">{{
-                                    formatIDR(item.product.price * item.quantity)
-                                    }}</span>
+                            <div v-if="formModel.paymentMethod === 'Bank Transfer'" class="mt-3">
+                                <BFormInput id="bank-name" v-model="formModel.bankName" placeholder="Bank Name" />
+                                <BFormInput id="account-number" class="mt-3" v-model="formModel.accountNumber"
+                                    placeholder="Account Number" />
                             </div>
-                            <div class="d-flex justify-content-between mt-3 border-top pt-3">
-                                <span>Subtotal:</span>
-                                <span class="fw-bold">{{ formatIDR(subtotal) }}</span>
-                            </div>
-                            <div class="d-flex justify-content-between">
-                                <span>Tax (12%):</span>
-                                <span class="fw-bold">{{ formatIDR(tax) }}</span>
-                            </div>
-                            <div class="d-flex justify-content-between border-top pt-3 mt-3">
-                                <span class="fw-bold">Total:</span>
-                                <span class="fw-bold text-danger">{{ formatIDR(total) }}</span>
-                            </div>
-                            <BButton variant="success" class="mt-4 w-100 fw-bold py-2 checkout-btn" @click="checkout">
-                                Confirm & Pay
-                            </BButton>
+                        </BForm>
+                    </BCardBody>
+                </BCard>
+            </BCol>
+
+            <!-- Order Summary -->
+            <BCol lg="4">
+                <BCard class="shadow-sm border-0 rounded-4 p-4">
+                    <h5 class="mb-4 fw-bold text-success">Order Summary</h5>
+                    <div v-for="item in cartItems" :key="item.id" class="d-flex align-items-center mb-3">
+                        <BImg :src="item.product.photo_desktop_url" alt="Product" class="rounded me-3" width="60"
+                            height="60" />
+                        <div class="flex-grow-1">
+                            <h6 class="fw-bold mb-1">{{ item.product.name }}</h6>
+                            <p class="text-muted small mb-0">{{ item.product.product_category_name }}</p>
                         </div>
+                        <span class="fw-bold">{{ formatIDR(item.product.price * item.quantity) }}</span>
                     </div>
-                </div>
-            </div>
-        </div>
+                    <BCol class="mt-3 border-top pt-3">
+                        <BCol class="d-flex justify-content-between"><span>Subtotal:</span><span class="fw-bold">{{
+                            formatIDR(subtotal) }}</span></BCol>
+                        <BCol class="d-flex justify-content-between"><span>Tax (12%):</span><span class="fw-bold">{{
+                            formatIDR(tax) }}</span></BCol>
+                        <BCol class="d-flex justify-content-between border-top pt-3 mt-3"><span
+                                class="fw-bold">Total:</span><span class="fw-bold text-danger">{{ formatIDR(total)
+                                }}</span></BCol>
+                    </BCol>
+                    <BButton variant="success" class="mt-4 w-100 fw-bold py-2" @click="checkout">Confirm & Pay</BButton>
+                </BCard>
+            </BCol>
+        </BRow>
     </Layout>
 </template>
+
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
