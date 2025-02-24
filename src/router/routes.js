@@ -39,6 +39,12 @@ export default [
     meta: { title: "Form Product", authRequired: true },
     component: () => import("../views/admin/product/form"),
   },
+  {
+    path: "/orders",
+    name: "orders",
+    meta: { title: "Master Orders", authRequired: true },
+    component: () => import("../views/admin/order"),
+  },
 
   // CLIENT
   {

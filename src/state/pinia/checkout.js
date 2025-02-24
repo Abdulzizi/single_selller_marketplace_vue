@@ -20,16 +20,23 @@ export const useOrderStore = defineStore("order", {
       try {
         const user = JSON.parse(localStorage.getItem("user"));
 
-        // if (!user || !user.user_id) {
-        //   console.error("User ID not found");
-        //   return;
-        // }
+        if (!user) {
+          console.error("User not found");
+          return;
+        }
 
-        const url = `${this.apiUrl}/api/v1/orders?page=${this.current}&per_page=${this.perpage}&user_id=${user.id}`;
+        // ambil nama role
+        const userRole = user.user_role_name;
+
+        let url = `${this.apiUrl}/api/v1/orders?page=${this.current}&per_page=${this.perpage}`;
+
+        // If the user is NOT a Super Admin, filter by user_id
+        if (userRole !== "Super Admin" && userRole !== "Seller") {
+          url += `&user_id=${user.id}`;
+        }
+
         const res = await axios.get(url);
-
         this.orders = res.data.data.list;
-        // console.log(this.orders);
         this.totalData = res.data.data.meta.total;
       } catch (error) {
         this.response = {
@@ -68,13 +75,21 @@ export const useOrderStore = defineStore("order", {
       }
     },
 
-    async updateOrder(item) {
+    async updateOrder(payload) {
       try {
-        const res = await axios.put(`${this.apiUrl}/api/v1/orders`, item);
-        this.response = { status: res.status, message: res.data.message };
+        if (!payload.id || !payload.status) {
+          throw new Error("Missing required fields: id or status.");
+        }
 
-        await this.fetchOrders();
+        const res = await axios.put(`${this.apiUrl}/api/v1/orders`, payload);
+
+        this.response = {
+          status: res.status,
+          message: res.data.message,
+        };
       } catch (error) {
+        console.error("Error updating order:", error);
+
         this.response = {
           status: error.response?.status || 500,
           message: error.response?.data?.message || "Failed to update order.",
