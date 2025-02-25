@@ -34,7 +34,7 @@
                             <BTableSimple class="align-middle dt-responsive nowrap w-100 table-check" id="order-list">
                                 <BThead>
                                     <BTr>
-                                        <BTh scope="col">Order ID</BTh>
+                                        <!-- <BTh scope="col">Order ID</BTh> -->
                                         <BTh scope="col">User</BTh>
                                         <BTh scope="col">Total Price</BTh>
                                         <BTh scope="col">Status</BTh>
@@ -45,7 +45,7 @@
                                 </BThead>
                                 <BTbody>
                                     <BTr v-for="order in orders" :key="order.id">
-                                        <BTd>{{ order.id }}</BTd>
+                                        <!-- <BTd>{{ order.id }}</BTd> -->
                                         <BTd>{{ order.user_name }}</BTd>
                                         <BTd>{{ formatPrice(order.total_price) }}</BTd>
                                         <BTd>
@@ -56,6 +56,7 @@
                                         <BTd>{{ formatDate(order.created_at) }}</BTd>
                                         <BTd>
                                             <ul class="list-unstyled">
+                                                <li v-if="order.details.length === 0">No details</li>
                                                 <li v-for="detail in order.details" :key="detail.id">
                                                     {{ detail.product_name }} (x{{ detail.quantity }}) - {{
                                                         formatPrice(detail.total) }}
@@ -63,16 +64,24 @@
                                             </ul>
                                         </BTd>
 
-                                        <BTd>
-                                            <BButton v-if="nextStatusMap[order.status]" variant="info" class="btn-sm"
-                                                @click="updateStatus({ ...order, user_id: order.user_id })">
-                                                Move to {{ nextStatusMap[order.status] }}
-                                            </BButton>
-
-                                            <BButton v-if="order.status !== 'completed'" variant="danger" class="btn-sm"
-                                                @click="updateStatus({ id: order.id, user_id: order.user_id, status: 'cancelled' })">
-                                                Cancel Order
-                                            </BButton>
+                                        <BTd class="text-center">
+                                            <ul class="list-unstyled hstack gap-1 mb-0 justify-content-start">
+                                                <li v-if="nextStatusMap[order.status]" data-bs-toggle="tooltip"
+                                                    data-bs-placement="top"
+                                                    :aria-label="`Move to ${nextStatusMap[order.status]}`"
+                                                    @click="updateStatus({ ...order, user_id: order.user_id })">
+                                                    <BButton variant="info" class="btn-sm">
+                                                        <i class="mdi mdi-arrow-right"></i>
+                                                    </BButton>
+                                                </li>
+                                                <li v-if="order.status !== 'completed'" data-bs-toggle="tooltip"
+                                                    data-bs-placement="top" aria-label="Cancel Order"
+                                                    @click="updateStatus({ id: order.id, user_id: order.user_id, status: 'cancelled' })">
+                                                    <BButton variant="danger" class="btn-sm">
+                                                        <i class="mdi mdi-cancel"></i>
+                                                    </BButton>
+                                                </li>
+                                            </ul>
                                         </BTd>
 
                                     </BTr>
@@ -123,7 +132,9 @@ const statusVariant = (status) => {
     switch (status) {
         case 'pending': return 'warning';
         case 'completed': return 'success';
-        case 'canceled': return 'danger';
+        case 'cancelled': return 'danger';
+        case 'processing': return 'primary';
+        case 'shipped': return 'info';
         default: return 'secondary';
     }
 };

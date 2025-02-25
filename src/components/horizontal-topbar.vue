@@ -55,6 +55,11 @@ export default {
       this.$router.push({ name: "cart" });
     },
 
+    goToMyOrder() {
+      this.$router.push({ name: "my-orders" });
+    },
+
+
     initFullScreen() {
       document.body.classList.toggle("fullscreen-enable");
       if (
@@ -219,6 +224,13 @@ export default {
         <div class="dropdown d-none d-lg-inline-block ms-1" v-if="userRole !== 'Client'">
           <BButton variant="white" type="button" class="btn header-item noti-icon" @click="initFullScreen">
             <i class="bx bx-fullscreen"></i>
+          </BButton>
+        </div>
+
+        <!-- ORDER: Navigate to My Orders -->
+        <div class="dropdown d-none d-lg-inline-block ms-1">
+          <BButton variant="white" type="button" class="btn header-item noti-icon" @click="goToMyOrder">
+            <i class="bx bx-package"></i>
           </BButton>
         </div>
 

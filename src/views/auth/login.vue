@@ -104,24 +104,37 @@ const formModel = reactive({
 });
 
 const statusCode = computed(() => authStore.response.status);
-// const errorList = computed(() => authStore.response?.list || {});
+const errorList = computed(() => authStore.response?.list || {});
 const errorMessage = computed(() => authStore.response?.message || "");
 const login = async () => {
   startProgress();
   try {
     await authStore.login(formModel);
-    if (statusCode.value != 200) {
-      failProgress()
-      showErrorToast("Login failed", errorMessage.value);
+
+    if (statusCode.value !== 200) {
+      failProgress();
+      console.log(errorList.value);
+
+      // If general error exists, show it
+      if (errorList.value.general) {
+        showErrorToast("Login failed", errorList.value.general.join(", "));
+      } else {
+        // If field-specific errors exist, show them
+        const messages = Object.values(errorList.value)
+          .flat()
+          .join("\n");
+        showErrorToast("Login failed", messages);
+      }
     } else {
       finishProgress();
-      showSuccessToast("User Logged in !");
+      showSuccessToast("User Logged in!");
       router.push("/");
     }
   } catch (error) {
     console.error(error);
-    failProgress()
+    failProgress();
     showErrorToast("Login failed", errorMessage.value);
   }
 };
+
 </script>

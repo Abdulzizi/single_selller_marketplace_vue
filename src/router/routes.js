@@ -77,6 +77,18 @@ export default [
     meta: { title: "Checkout Success", authRequired: true },
     component: () => import("../views/client/checkout/success.vue"),
   },
+  {
+    path: "/my-orders",
+    name: "my-orders",
+    meta: { title: "Order List", authRequired: true },
+    component: () => import("../views/client/order"),
+  },
+  {
+    path: "/my-orders/:id",
+    name: "my-order-detail",
+    meta: { title: "Order Detail", authRequired: true },
+    component: () => import("../views/client/order-detail"),
+  },
 
   {
     path: "/login",

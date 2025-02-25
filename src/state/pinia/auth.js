@@ -23,21 +23,24 @@ export const useAuthStore = defineStore("auth", {
           credential
         );
 
-        // if (res.data.data.user_role_name === "Client") {
-        //   window.location.href = "/products";
-        // }
-
         this.response = {
           status: res.status,
           message: res.data.message,
         };
+
         this.saveToken(res.data.data.access_token);
         this.saveUser(res.data.data.user);
       } catch (error) {
+        let errors = error.response?.data?.errors || {};
+
+        if (Array.isArray(errors)) {
+          errors = { general: errors }; // Store as { general: ["Error message here"] }
+        }
+
         this.response = {
           status: error.response?.status,
-          message: error.message,
-          error: error.response.data.errors,
+          message: error.response?.data?.message || "Something went wrong",
+          list: errors,
         };
       }
     },

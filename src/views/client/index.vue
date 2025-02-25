@@ -187,7 +187,7 @@ const getCategories = async () => {
 const applyFilters = async () => {
     // console.log("Selected Categories:", selectedCategories.value);
 
-    startProgress();
+    // startProgress();
     productStore.productCategoryId = selectedCategories.value;
 
     try {
@@ -203,7 +203,7 @@ const applyFilters = async () => {
 
         showFilters.value = false;
         showSuccessToast("Filters applied successfully.");
-        finishProgress();
+        // finishProgress();
     } catch (error) {
         failProgress();
         showErrorToast("Failed to apply filters.");
@@ -237,7 +237,7 @@ const addToCart = (product) => {
             }
         ];
 
-        startProgress();
+        // startProgress();
         console.log("Added to Cart:", payload);
 
         // Send each item separately

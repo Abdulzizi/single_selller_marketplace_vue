@@ -47,6 +47,21 @@ export const useOrderStore = defineStore("order", {
       }
     },
 
+    async fetchOrderById(id) {
+      try {
+        const res = await axios.get(`${this.apiUrl}/api/v1/orders/?id=${id}`);
+        this.orders = res.data.data.list;
+        this.totalData = res.data.data.meta.total;
+      } catch (error) {
+        this.response = {
+          status: error.response?.status || 500,
+          message:
+            error.response?.data?.message || "Failed to fetch order by id.",
+          list: error.response?.data?.errors || [],
+        };
+      }
+    },
+
     async addOrder(item) {
       try {
         const res = await axios.post(`${this.apiUrl}/api/v1/orders`, item);

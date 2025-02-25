@@ -132,7 +132,7 @@ const router = useRouter();
 
 import { useOrderStore, useCartStore } from "@/state/pinia";
 import { useProgress } from "@/helpers/progress";
-import { showErrorToast, showSuccessToast } from "@/helpers/alert.js";
+import { showErrorToast, showSuccessToast, showConfirmationDialog } from "@/helpers/alert.js";
 
 const { startProgress, finishProgress, failProgress } = useProgress();
 
@@ -149,10 +149,16 @@ const getCartItemsFromLocalStorage = () => {
 };
 
 const formModel = ref({
-    address: "",
+    fullName: "",
+    street: "",
+    apartment: "",
     city: "",
     postcode: "",
-    paymentMethod: ""
+    country: "",
+    paymentMethod: "",
+    cardNumber: "",
+    cardExpiry: "",
+    cardCVV: ""
 });
 
 const subtotal = computed(() => cartItems.value.reduce((sum, item) => sum + item.product.price, 0));
@@ -205,6 +211,15 @@ const checkout = async () => {
         return;
     }
 
+    const confirmed = await showConfirmationDialog(
+        "Confirm Order",
+        "Are you sure you want to place this order?",
+        "Yes, Order it!"
+    );
+    if (!confirmed) {
+        return;
+    }
+
     console.log("Checkout Payload:", JSON.stringify(payload, null, 2));
 
     try {
@@ -213,10 +228,8 @@ const checkout = async () => {
 
         if (orderStore.response.status === 200 || orderStore.response.status === 201) {
             await cartStore.clearCart();
-
             finishProgress();
             showSuccessToast("Order placed successfully!");
-
             router.push("/checkout-success");
         } else {
             failProgress();
