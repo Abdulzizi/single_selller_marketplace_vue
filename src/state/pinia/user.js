@@ -31,7 +31,6 @@ export const useUserStore = defineStore("user", {
     // * Fetch user data
     async getUsers() {
       try {
-        // console.log(`API URL: ${process.env.VUE_APP_APIURL}`);
         const url = `${this.apiUrl}/api/v1/users?page=${this.current}&per_page=${this.perPage}&name=${this.searchQuery}`;
 
         const res = await axios.get(url);

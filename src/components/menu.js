@@ -25,25 +25,25 @@ export const menuItems = [
       {
         id: 5,
         label: "User",
-        link: "/user",
+        link: "/admin/user",
         parentId: 4,
       },
       {
         id: 6,
         label: "Product Category",
-        link: "/product-category",
+        link: "/admin/product-category",
         parentId: 4,
       },
       {
         id: 7,
         label: "Products",
-        link: "/product",
+        link: "/admin/product",
         parentId: 4,
       },
       {
         id: 8,
         label: "Orders",
-        link: "/orders",
+        link: "/admin/orders",
         parentId: 4,
       },
     ],
@@ -52,6 +52,6 @@ export const menuItems = [
     id: 8,
     label: "MarketPlace",
     icon: "bx-store",
-    link: "/products",
+    link: "/",
   },
 ];

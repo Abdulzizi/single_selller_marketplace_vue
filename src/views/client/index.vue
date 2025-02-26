@@ -223,31 +223,38 @@ const viewDetails = (product) => {
 };
 
 const addToCart = (product) => {
-    // console.log(product);
-
     if (product) {
         const user = JSON.parse(localStorage.getItem("user"));
 
-        const payload = [
-            // product
-            {
+        // Check if product already exists in the cart
+        const existingItem = cartStore.cartItems.find(item => item.product_id === product.id);
+
+        if (existingItem) {
+            // Update quantity
+            const updatedPayload = {
+                id: existingItem.id,
+                user_id: user?.id,
+                product_id: product.id,
+                quantity: existingItem.quantity + 1
+            };
+
+            cartStore.updateCartItem(updatedPayload).then(() => finishProgress());
+            showSuccessToast("Product quantity updated in cart!");
+        } else {
+            // Add new item to cart
+            const payload = {
                 user_id: user?.id,
                 product_id: product.id,
                 quantity: 1
-            }
-        ];
+            };
 
-        // startProgress();
-        console.log("Added to Cart:", payload);
-
-        // Send each item separately
-        payload.forEach(item => cartStore.addCartItem(item).then(() => finishProgress()));
-        showSuccessToast("Product added to cart successfully!");
+            cartStore.addCartItem(payload).then(() => finishProgress());
+            showSuccessToast("Product added to cart successfully!");
+        }
     } else {
         showErrorToast("Product not found", "Please try again later.");
     }
 };
-
 
 // UNCOMMECT JIKA INGIN REACTIVE
 // watch(selectedCategories, applyFilters, { deep: true });

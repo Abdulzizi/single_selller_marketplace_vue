@@ -7,19 +7,25 @@
                 <BCard class="shadow-sm border-0 rounded-3 bg-white p-4">
                     <BCardBody>
                         <a href="#" class="d-inline-block mb-3 fw-bold hover-underline"
-                            @click.prevent="$router.push('/orders')">
+                            @click.prevent="$router.push({ name: 'my-orders' })">
                             ← Back to Orders
                         </a>
 
-                        <h5 class="fw-bold">Order #{{ order?.id }}</h5>
-                        <p class="text-muted">Status: <span class="fw-bold">{{ order?.status }}</span></p>
+                        <h5 class="fw-bold">Order #{{ order?.id || '-' }}</h5>
+                        <p class="text-muted">Status: <span class="fw-bold">{{ order?.status || '-' }}</span></p>
                         <p class="text-muted">Date: {{ formatDate(order?.created_at) }}</p>
 
                         <h6 class="fw-bold mt-4">Shipping Address</h6>
-                        <p class="text-muted">John Doe, 123 Main St, Jakarta, Indonesia</p>
+                        <p class="text-muted">
+                            {{ order?.street ? order.street + ',' : '-' }}
+                            {{ order?.apartment ? order.apartment + ',' : '' }}
+                            {{ order?.city ? order.city + ',' : '' }}
+                            {{ order?.postcode ? order.postcode + ',' : '' }}
+                            {{ order?.country || '' }}
+                        </p>
 
                         <h6 class="fw-bold mt-4">Payment Method</h6>
-                        <p class="text-muted">Bank Transfer - BCA 123-456-7890</p>
+                        <p class="text-muted">{{ order?.payment_method || '-' }}</p>
 
                         <h6 class="fw-bold mt-4">Order Items</h6>
                         <BRow class="g-3">
@@ -27,8 +33,8 @@
                                 <BCard class="border rounded-3 p-3">
                                     <BCardBody class="d-flex justify-content-between align-items-center">
                                         <div>
-                                            <h6 class="fw-bold">{{ item.product_name }}</h6>
-                                            <p class="text-muted mb-0">Quantity: {{ item.quantity }}</p>
+                                            <h6 class="fw-bold">{{ item.product_name || '-' }}</h6>
+                                            <p class="text-muted mb-0">Quantity: {{ item.quantity || '-' }}</p>
                                         </div>
                                         <p class="fw-bold">RP. {{ formatIDR(item.total) }}</p>
                                     </BCardBody>
@@ -65,14 +71,14 @@ const formatIDR = (value) => {
 };
 
 const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('id-ID', {
+    return dateString ? new Date(dateString).toLocaleDateString('id-ID', {
         year: 'numeric', month: 'long', day: 'numeric'
-    });
+    }) : '-';
 };
 
 const getOrderDetails = async () => {
     await orderStore.fetchOrderById(route.params.id);
-    order.value = orderStore.orders[0] || null;
+    order.value = orderStore.orders?.[0] ?? null;
 };
 
 onMounted(getOrderDetails);

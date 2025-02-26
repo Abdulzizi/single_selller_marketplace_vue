@@ -19,7 +19,7 @@ const router = createRouter({
     } else {
       return { x: 0, y: 0 };
     }
-  }
+  },
 });
 
 // Before each route evaluates...
@@ -28,9 +28,7 @@ router.beforeEach((routeTo, routeFrom, next) => {
 
   // Check if auth is required on this route
   // (including nested routes).
-  const authRequired = routeTo.matched.some(
-    (route) => route.meta.authRequired
-  );
+  const authRequired = routeTo.matched.some((route) => route.meta.authRequired);
 
   // If auth isn't required for the route, just continue.
   if (!authRequired) return next();

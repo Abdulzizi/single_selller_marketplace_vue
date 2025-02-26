@@ -32,42 +32,13 @@
                                 </BButton>
                             </div>
 
-                            <!-- Product Add-ons -->
-                            <!-- <div v-if="product.details && product.details.length > 0" class="mt-4">
-                                <h5 class="fw-bold">Available Add-ons:</h5>
-                                <BListGroup>
-                                    <BListGroupItem v-for="detail in product.details" :key="detail.id"
-                                        class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <strong>{{ detail.type }}:</strong> {{ detail.description }}
-                                            <span v-if="detail.price > 0" class="text-success"> (+RP.{{
-                                                detail.price.toLocaleString() }})</span>
-                                        </div>
-                                        
-                                        <div class="d-flex align-items-center">
-                                            <BButton variant="outline-danger" class="px-2 py-1"
-                                                @click="decrementQuantity(detail)">
-                                                -
-                                            </BButton>
-
-                                            <span class="mx-3 fw-bold">{{ detail.quantity }}</span>
-
-                                            <BButton variant="outline-success" class="px-2 py-1"
-                                                @click="incrementQuantity(detail)">
-                                                +
-                                            </BButton>
-                                        </div>
-                                    </BListGroupItem>
-                                </BListGroup>
-                            </div> -->
-
                             <!-- Product detail / Addon -->
                             <div v-if="product.details && product.details.length > 0" class="mt-4">
                                 <h5 class="fw-bold">Available Add-ons:</h5>
                                 <BListGroup>
                                     <BListGroupItem v-for="detail in product.details" :key="detail.id">
                                         <div class="d-flex align-items-center">
-                                            <BFormCheckbox v-model="detail.selected">
+                                            <BFormCheckbox :model-value="detail.selected" @change="toggleAddon(detail)">
                                                 <strong>{{ detail.type }}</strong>: {{ detail.description }}
                                                 <span v-if="detail.price > 0" class="text-success"> (+RP.{{
                                                     detail.price.toLocaleString() }})</span>
@@ -118,7 +89,6 @@ import {
 
 const { startProgress, finishProgress, failProgress } = useProgress();
 
-
 const cartStore = useCartStore();
 const productStore = useProductStore();
 const route = useRoute();
@@ -136,14 +106,23 @@ const fetchProduct = async () => {
         if (product.value.details) {
             product.value.details = product.value.details.map(detail => ({
                 ...detail,
+                selected: false,
                 quantity: 0 // Default quantity for add-ons
             }));
         }
+
         finishProgress();
     } catch (error) {
         failProgress();
         showErrorToast("Error fetching product", error);
     }
+};
+
+const toggleAddon = (detail) => {
+    detail.selected = !detail.selected;
+    detail.quantity = detail.selected ? 1 : 0; // at least 1 quantity if selected
+
+    product.value.details = [...product.value.details];
 };
 
 // Product Quantity Controls
@@ -157,38 +136,91 @@ const decrementProductQuantity = () => {
     }
 };
 
-// Add to Cart
-const addToCart = () => {
-    if (product.value) {
-        const user = JSON.parse(localStorage.getItem("user"));
-        // console.log("user", user.id);
+const addToCart = async () => {
+    if (!product.value) {
+        showErrorToast("Product not found", "Please try again later.");
+        return;
+    }
 
-        const selectedAddons = product.value.details.filter(detail => detail.quantity > 0);
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) {
+        showErrorToast("User not found", "Please log in first.");
+        return;
+    }
 
-        const payload = [
-            // Main product
-            {
-                user_id: user?.id,
-                product_id: product.value.id,
-                quantity: productQuantity.value
-            },
-            // Add-ons
-            ...selectedAddons.map(addon => ({
-                user_id: user?.id,
+    const selectedAddons = product.value.details.filter(detail => detail.selected);
+
+    const cartItemsPayload = [];
+
+    if (selectedAddons.length > 0) {
+        // Jika add-on dipilih, buat SATU item cart + add-on yg dipilih
+        const addon = selectedAddons[0]; // Only take the first selected add-on
+
+        const existingAddonItem = cartStore.cartItems.find(item =>
+            item.user_id === user.id &&
+            item.product_id === product.value.id &&
+            item.product_detail_id === addon.id
+        );
+
+        if (existingAddonItem) {
+            // Update cart item quantity
+            cartItemsPayload.push({
+                id: existingAddonItem.id,
+                user_id: user.id,
                 product_id: product.value.id,
                 product_detail_id: addon.id,
-                quantity: addon.quantity
-            }))
-        ];
-
-        startProgress();
-        console.log("Added to Cart:", payload);
-
-        // Send each item separately
-        payload.forEach(item => cartStore.addCartItem(item).then(() => finishProgress()));
-        showSuccessToast(`${product.value.name} added to cart successfully!`);
+                quantity: existingAddonItem.quantity + 1
+            });
+        } else {
+            // Add new cart item with product + addon
+            cartItemsPayload.push({
+                user_id: user.id,
+                product_id: product.value.id,
+                product_detail_id: addon.id,
+                quantity: 1
+            });
+        }
     } else {
-        showErrorToast("Product not found", "Please try again later.");
+        // Tidak ada add-on dipilih -> Hanya tambahkan produk utama
+        const existingCartItem = cartStore.cartItems.find(item =>
+            item.user_id === user.id &&
+            item.product_id === product.value.id &&
+            !item.product_detail_id // Ensure it's the main product, not an add-on
+        );
+
+        if (existingCartItem) {
+            // Update the existing product quantity
+            cartItemsPayload.push({
+                id: existingCartItem.id,
+                user_id: user.id,
+                product_id: product.value.id,
+                quantity: existingCartItem.quantity + productQuantity.value
+            });
+        } else {
+            // Tambahkan produk baru tanpa add-on
+            cartItemsPayload.push({
+                user_id: user.id,
+                product_id: product.value.id,
+                quantity: productQuantity.value
+            });
+        }
+    }
+
+    console.log("Final Cart Payload:", cartItemsPayload);
+
+    startProgress();
+
+    try {
+        // Run all cart updates in parallel
+        await Promise.all(cartItemsPayload.map(item => {
+            return item.id ? cartStore.updateCartItem(item) : cartStore.addCartItem(item);
+        }));
+
+        showSuccessToast(`${product.value.name} added to cart successfully!`);
+    } catch (error) {
+        showErrorToast("Failed to update cart.");
+    } finally {
+        finishProgress();
     }
 };
 

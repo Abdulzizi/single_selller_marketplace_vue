@@ -14,7 +14,7 @@ export default {
                         </h1>
                         <h4 class="text-uppercase">Thank you for your purchase!</h4>
                         <div class="mt-5 text-center">
-                            <router-link to="/products">
+                            <router-link to="/">
                                 <BButton variant="primary">Back to Home</BButton>
                             </router-link>
                         </div>

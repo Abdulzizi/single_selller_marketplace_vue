@@ -159,11 +159,11 @@ const totalPrice = computed(() => {
 });
 
 const navigateToProducts = () => {
-    router.push("/products");
+    router.push({ name: "products" });
 }
 
 const navigateToCheckout = () => {
-    router.push("/checkout");
+    router.push({ name: "checkout" });
 };
 
 const deliveryFee = computed(() => (cartItems.value.length > 0 ? 15000 : 0));

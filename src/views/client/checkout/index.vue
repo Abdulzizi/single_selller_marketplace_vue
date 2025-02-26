@@ -46,7 +46,7 @@
                             <BRow class="mb-3">
                                 <BCol md="3" class="fw-semibold">Country</BCol>
                                 <BCol md="9">
-                                    <BFormInput id="form-postcode" v-model="formModel.postcode"
+                                    <BFormInput id="form-postcode" v-model="formModel.country"
                                         placeholder="Enter your country" />
                                 </BCol>
 
@@ -114,7 +114,11 @@
                                 class="fw-bold">Total:</span><span class="fw-bold text-danger">{{ formatIDR(total)
                                 }}</span></BCol>
                     </BCol>
-                    <BButton variant="success" class="mt-4 w-100 fw-bold py-2" @click="checkout">Confirm & Pay</BButton>
+                    <BButton variant="success" class="mt-4 w-100 fw-bold py-2" @click="checkout"
+                        :disabled="!cartItems.length || !formModel.paymentMethod">
+                        Confirm & Pay
+                    </BButton>
+
                 </BCard>
             </BCol>
         </BRow>
@@ -142,11 +146,9 @@ const cartStore = useCartStore();
 
 const getCartItemsFromLocalStorage = () => {
     const localStorageCartItems = localStorage.getItem("cartItems");
-    if (localStorageCartItems) {
-        cartItems.value = JSON.parse(localStorageCartItems);
-        // console.log("Cart items:", cartItems.value);
-    }
+    cartItems.value = localStorageCartItems ? JSON.parse(localStorageCartItems) : [];
 };
+
 
 const formModel = ref({
     fullName: "",
@@ -188,14 +190,35 @@ const orderPayload = computed(() => {
 
     return {
         user_id: user.id,
-        product_detail_id: cartItems.value[0].product.product_detail_id || null,
-        details: cartItems.value.map(item => {
-            return {
-                product_id: item.product.id,
-                quantity: item.quantity,
-                is_added: true
-            };
-        })
+        product_detail_id: cartItems.value.length > 0 ? cartItems.value[0].product.product_detail_id : null,
+        delivery_details: {
+            full_name: formModel.value.fullName,
+            street: formModel.value.street,
+            apartment: formModel.value.apartment,
+            city: formModel.value.city,
+            postcode: formModel.value.postcode,
+            country: formModel.value.country,
+        },
+        payment_method: formModel.value.paymentMethod,
+        payment_details: formModel.value.paymentMethod === "Credit Card"
+            ? {
+                card_number: formModel.value.cardNumber,
+                card_expiry: formModel.value.cardExpiry,
+                card_cvv: formModel.value.cardCVV,
+            }
+            : formModel.value.paymentMethod === "Bank Transfer"
+                ? {
+                    bank_name: formModel.value.bankName,
+                    account_number: formModel.value.accountNumber,
+                }
+                : {},
+        details: cartItems.value.map(item => ({
+            product_id: item.product.id,
+            product_detail_id: item.product.product_detail_id,
+            quantity: item.quantity,
+            total_price: item.product.price * item.quantity,
+        })),
+        total_price: total.value,
     };
 });
 

@@ -1,94 +1,119 @@
 import { useAuthStore } from "@/state/pinia";
 
 export default [
+  // {
+  //   path: "/",
+  //   name: "default",
+  //   meta: { title: "Dashboard", authRequired: true },
+  //   component: () => import("../views/dashboards/default"),
+  // },
+
+  // Client
   {
     path: "/",
-    name: "default",
-    meta: { title: "Dashboard", authRequired: true },
-    component: () => import("../views/dashboards/default"),
+    name: "products",
+    meta: {
+      title: "Product Catalog",
+      authRequired: true,
+    },
+    component: () => import("../views/client/index.vue"),
   },
-  // {
-  //   path: "/user",
-  //   name: "user",
-  //   meta: { title: "Master User", authRequired: true },
-  //   component: () => import("../views/user")
-  // },
+
+  {
+    path: "/product/:slug",
+    name: "product-detail",
+    meta: {
+      title: "Product Detail",
+      authRequired: true,
+    },
+    component: () => import("../views/client/product-detail"),
+  },
+  {
+    path: "/cart",
+    name: "cart",
+    meta: { title: "Cart", authRequired: true, restrictedTo: ["Super Admin"] },
+    component: () => import("../views/client/cart"),
+  },
+  {
+    path: "/checkout",
+    name: "checkout",
+    meta: {
+      title: "Checkout",
+      authRequired: true,
+    },
+    component: () => import("../views/client/checkout"),
+  },
+  {
+    path: "/checkout-success",
+    name: "checkout-success",
+    meta: {
+      title: "Checkout Success",
+      authRequired: true,
+    },
+    component: () => import("../views/client/checkout/success.vue"),
+  },
+  {
+    path: "/my-orders",
+    name: "my-orders",
+    meta: {
+      title: "Order List",
+      authRequired: true,
+    },
+    component: () => import("../views/client/order"),
+  },
+  {
+    path: "/my-orders/:id",
+    name: "my-order-detail",
+    meta: {
+      title: "Order Detail",
+      authRequired: true,
+    },
+    component: () => import("../views/client/order-detail"),
+  },
 
   // ADMIN
   {
-    path: "/user",
+    path: "/admin/user",
     name: "user",
     meta: { title: "Master User", authRequired: true },
     component: () => import("../views/admin/user"),
   },
   {
-    path: "/product-category",
+    path: "/admin/product-category",
     name: "product-category",
     meta: { title: "Master Product Category", authRequired: true },
     component: () => import("../views/admin/product-category"),
   },
   {
-    path: "/product",
+    path: "/admin/products",
     name: "product",
     meta: { title: "Master Products", authRequired: true },
     component: () => import("../views/admin/product"),
   },
   {
-    path: "/product-form/:id?",
+    path: "/admin/product-form/:id?",
     name: "product-form",
     meta: { title: "Form Product", authRequired: true },
     component: () => import("../views/admin/product/form"),
   },
   {
-    path: "/orders",
+    path: "/admin/orders",
     name: "orders",
     meta: { title: "Master Orders", authRequired: true },
     component: () => import("../views/admin/order"),
   },
 
   // CLIENT
-  {
-    path: "/products",
-    name: "products",
-    meta: { title: "List of products", authRequired: true },
-    component: () => import("../views/client/index.vue"),
-  },
-  {
-    path: "/product/:slug",
-    name: "product-detail",
-    meta: { title: "Product Detail", authRequired: true },
-    component: () => import("../views/client/product-detail"),
-  },
-  {
-    path: "/cart",
-    name: "cart",
-    meta: { title: "Cart", authRequired: true },
-    component: () => import("../views/client/cart"),
-  },
-  {
-    path: "/checkout",
-    name: "checkout",
-    meta: { title: "Checkout", authRequired: true },
-    component: () => import("../views/client/checkout"),
-  },
-  {
-    path: "/checkout-success",
-    name: "checkout-success",
-    meta: { title: "Checkout Success", authRequired: true },
-    component: () => import("../views/client/checkout/success.vue"),
-  },
-  {
-    path: "/my-orders",
-    name: "my-orders",
-    meta: { title: "Order List", authRequired: true },
-    component: () => import("../views/client/order"),
-  },
-  {
-    path: "/my-orders/:id",
-    name: "my-order-detail",
-    meta: { title: "Order Detail", authRequired: true },
-    component: () => import("../views/client/order-detail"),
-  },
+  // {
+  //   path: "/products",
+  //   name: "products",
+  //   meta: {
+  //     title: "List of products",
+  //     authRequired: true,
+  //
+  //   },
+  //   component: () => import("../views/client/index.vue"),
+  // },
 
   {
     path: "/login",
