@@ -71,10 +71,6 @@ export const useAuthStore = defineStore("auth", {
       if (user.user_role_name === "Client") {
         window.location.href = "/";
       }
-
-      // if (user.user_role_name === "Super Admin") {
-      //   window.location.href = "/";
-      // }
     },
     async removeUser() {
       localStorage.removeItem("user");

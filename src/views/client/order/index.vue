@@ -3,31 +3,7 @@
         <PageHeader title="My Orders" pageTitle="Orders" />
 
         <BRow class="gx-4 gy-4">
-            <!-- Sidebar Filters (Status Filter) -->
-            <BCol lg="3" class="d-none d-lg-block">
-                <BCard class="shadow-sm border-0 rounded-3 p-3">
-                    <BCardBody>
-                        <h5 class="mb-3 fw-bold">Filter Orders</h5>
-                        <h6 class="mt-3 fw-semibold">Status</h6>
-                        <div>
-                            <BFormGroup v-for="status in orderStatuses" :key="status.value" class="mb-2">
-                                <BFormCheckbox v-model="selectedStatuses" :value="status.value">
-                                    {{ status.label }}
-                                </BFormCheckbox>
-                            </BFormGroup>
-                        </div>
-                        <BButton @click="applyFilters" variant="primary" class="mt-3 w-100 fw-bold">
-                            Apply Filters
-                        </BButton>
-                        <a href="#" class="mt-2 d-block text-muted fst-italic" @click.prevent="resetFilters">
-                            Reset filters
-                        </a>
-                    </BCardBody>
-                </BCard>
-            </BCol>
-
-            <!-- Order List -->
-            <BCol lg="9">
+            <BCol lg="12">
                 <BCard class="shadow-sm border-0 rounded-3 bg-white p-4">
                     <BCardBody>
                         <a href="#" class="d-inline-block mb-3 fw-bold hover-underline"
@@ -38,10 +14,10 @@
                         <BRow class="g-4">
                             <BCol v-if="filteredOrders.length === 0" class="text-center py-5">
                                 <h4 class="text-muted">No Orders Found</h4>
-                                <p>Try adjusting the filters.</p>
+                                <p>Try placing an order.</p>
                             </BCol>
 
-                            <BCol v-for="order in filteredOrders" :key="order.id" xs="12" md="6" lg="6" class="d-flex">
+                            <BCol v-for="order in filteredOrders" :key="order.id" cols="12" class="d-flex">
                                 <BCard class="border-2 rounded-3 overflow-hidden order-card p-3 w-100">
                                     <BCardBody class="d-flex flex-column">
                                         <div class="d-flex justify-content-between align-items-center">
@@ -88,7 +64,7 @@ import Layout from "@/layouts/main";
 import PageHeader from "@/components/page-header";
 import { useOrderStore } from "@/state/pinia";
 import { useProgress } from "@/helpers/progress";
-import { showSuccessToast, showErrorToast } from "@/helpers/alert.js";
+import { showErrorToast } from "@/helpers/alert.js";
 import { useRouter } from "vue-router";
 
 const { startProgress, finishProgress, failProgress } = useProgress();
@@ -97,15 +73,6 @@ const router = useRouter();
 
 const orders = ref([]);
 const filteredOrders = ref([]);
-const selectedStatuses = ref([]);
-
-const orderStatuses = ref([
-    { label: "Pending", value: "pending" },
-    { label: "Processing", value: "processing" },
-    { label: "Shipped", value: "shipped" },
-    { label: "Delivered", value: "delivered" },
-    { label: "Cancelled", value: "cancelled" },
-]);
 
 const formatIDR = (value) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(value);
@@ -137,21 +104,6 @@ const getOrders = async () => {
         failProgress();
         showErrorToast("Failed to fetch orders.");
     }
-};
-
-const applyFilters = () => {
-    startProgress();
-    filteredOrders.value = orders.value.filter(order =>
-        selectedStatuses.value.length === 0 || selectedStatuses.value.includes(order.status)
-    );
-    showSuccessToast("Filters applied successfully.");
-    finishProgress();
-};
-
-const resetFilters = () => {
-    selectedStatuses.value = [];
-    filteredOrders.value = [...orders.value];
-    showSuccessToast("Filters reset successfully.");
 };
 
 const viewOrderDetails = (order) => {

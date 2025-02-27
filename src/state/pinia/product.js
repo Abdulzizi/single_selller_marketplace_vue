@@ -36,8 +36,6 @@ export const useProductStore = defineStore("product", {
           ? this.productCategoryId.join(",")
           : "";
 
-        console.log("productCategoryParam", productCategoryParam);
-
         const url = `${this.apiUrl}/api/v1/products?page=${this.current}&per_page=${this.perpage}&product_category_id=${productCategoryParam}&min_price=${this.minPrice}&max_price=${this.maxPrice}`;
         const res = await axios.get(url);
 

@@ -6,38 +6,37 @@
             <!-- Sidebar Filters (Mobile Responsive) -->
             <BCol lg="3" class="d-none d-lg-block">
                 <BCard v-if="showFilters" class="shadow-sm border-0 rounded-3 p-3" @click.self="showFilters = false">
-                    <BCardBody>
-                        <h5 class="mb-3 fw-bold">Filter Products</h5>
+                    <h5 class="mb-3 fw-bold">Filter Products</h5>
 
-                        <!-- Category Filter -->
-                        <h6 class="mt-3 fw-semibold">Category</h6>
-                        <div>
-                            <div v-for="category in categories" :key="category.value" class="form-check">
-                                <input class="form-check-input" type="checkbox" :id="'category-' + category.value"
-                                    :value="category.value" v-model="selectedCategories" />
-                                <label class="form-check-label" :for="'category-' + category.value">
-                                    {{ category.label }}
-                                </label>
-                            </div>
+                    <!-- Category Filter -->
+                    <h6 class="mt-3 fw-semibold">Category</h6>
+                    <div>
+                        <div v-for="category in categories" :key="category.value" class="form-check">
+                            <input class="form-check-input" type="checkbox" :id="'category-' + category.value"
+                                :value="category.value" v-model="selectedCategories" />
+                            <label class="form-check-label" :for="'category-' + category.value">
+                                {{ category.label }}
+                            </label>
                         </div>
+                    </div>
 
-                        <!-- Price Range Filter -->
-                        <h6 class="mt-4 fw-semibold">Price Range (RP)</h6>
-                        <div class="d-flex align-items-center gap-2">
-                            <input v-model="minPrice" type="number" class="form-control rounded-3" placeholder="Min" />
-                            <div class="fw-bold d-flex align-items-center justify-content-center">—</div>
-                            <input v-model="maxPrice" type="number" class="form-control rounded-3" placeholder="Max" />
-                        </div>
+                    <!-- Price Range Filter -->
+                    <h6 class="mt-4 fw-semibold">Price Range (RP)</h6>
+                    <div class="d-flex align-items-center gap-2">
+                        <input v-model="minPrice" type="number" class="form-control rounded-3" placeholder="Min" />
+                        <div class="fw-bold d-flex align-items-center justify-content-center">—</div>
+                        <input v-model="maxPrice" type="number" class="form-control rounded-3" placeholder="Max" />
+                    </div>
 
-                        <!-- Apply Filters -->
-                        <BButton @click="applyFilters" variant="primary" class="mt-3 w-100 fw-bold">
-                            Apply Filters
-                        </BButton>
+                    <!-- Apply Filters -->
+                    <BButton @click="applyFilters" variant="primary" class="mt-3 w-100 fw-bold">
+                        Apply Filters
+                    </BButton>
 
-                        <a href="#" class="mt-2 d-block text-muted fst-italic" @click.prevent="resetFilters">
-                            Reset filters
-                        </a>
-                    </BCardBody>
+                    <a href="#" class="mt-2 d-block text-muted fst-italic" @click.prevent="resetFilters">
+                        Reset filters
+                    </a>
+
                 </BCard>
             </BCol>
 
@@ -48,7 +47,7 @@
                 </BButton>
 
                 <transition name="fade">
-                    <BCard v-if="showFilters" class="shadow-sm border-0 rounded-3 mt-3 p-3">
+                    <BCard v-if="showFilters" class="shadow-sm border-0 rounded-3 mt-3 p-2">
                         <BCardBody>
                             <h5 class="mb-3 fw-bold">Filter Products</h5>
 
@@ -91,37 +90,35 @@
             <!-- Product List with White Background -->
             <BCol lg="9">
                 <BCard class="shadow-sm border-0 rounded-3 bg-white p-4">
-                    <BCardBody>
-                        <BRow class="g-4">
-                            <BCol v-if="filteredProducts.length === 0" class="text-center py-5">
-                                <h4 class="text-muted">No Products Found</h4>
-                                <p>Try adjusting the filters.</p>
-                            </BCol>
+                    <BRow class="g-4">
+                        <BCol v-if="filteredProducts.length === 0" class="text-center py-5">
+                            <h4 class="text-muted">No Products Found</h4>
+                            <p>Try adjusting the filters.</p>
+                        </BCol>
 
-                            <BCol v-for="product in filteredProducts" :key="product.id" xs="12" sm="6" md="4">
-                                <BCard class="border-2 rounded-3 text-center overflow-hidden product-card">
-                                    <BCardImg :src="product.photo_desktop_url" :alt="product.name" top
-                                        class="rounded-top-3 product-image" loading="lazy" />
-                                    <BCardBody class="d-flex flex-column">
-                                        <h6 class="fw-bold">{{ product.name }}</h6>
-                                        <p class="text-muted my-0">{{ product.product_category_name }}</p>
-                                        <p class="text-primary fw-bold">RP.{{ product.price.toLocaleString() }}</p>
+                        <BCol v-for="product in filteredProducts" :key="product.id" xs="12" sm="6" md="4">
+                            <BCard class="border-2 rounded-3 text-center overflow-hidden product-card">
+                                <BCardImg :src="product.photo_desktop_url" :alt="product.name" top
+                                    class="rounded-top-3 product-image" loading="lazy" />
+                                <BCardBody class="d-flex flex-column">
+                                    <h6 class="fw-bold">{{ product.name }}</h6>
+                                    <p class="text-muted my-0">{{ product.product_category_name }}</p>
+                                    <p class="text-primary fw-bold">RP.{{ product.price.toLocaleString() }}</p>
 
-                                        <div class="d-flex flex-column gap-2 mt-auto">
-                                            <BButton variant="outline-primary" @click="viewDetails(product)"
-                                                class="w-100 fw-semibold">
-                                                View Details
-                                            </BButton>
-                                            <BButton variant="success" @click="addToCart(product)"
-                                                class="w-100 fw-semibold">
-                                                <i class="bi bi-cart-plus me-1"></i> Add To Cart
-                                            </BButton>
-                                        </div>
-                                    </BCardBody>
-                                </BCard>
-                            </BCol>
-                        </BRow>
-                    </BCardBody>
+                                    <div class="d-flex flex-column gap-2 mt-auto">
+                                        <BButton variant="outline-primary" @click="viewDetails(product)"
+                                            class="w-100 fw-semibold">
+                                            View Details
+                                        </BButton>
+                                        <BButton variant="success" @click="addToCart(product)"
+                                            class="w-100 fw-semibold">
+                                            <i class="bi bi-cart-plus me-1"></i> Add To Cart
+                                        </BButton>
+                                    </div>
+                                </BCardBody>
+                            </BCard>
+                        </BCol>
+                    </BRow>
                 </BCard>
             </BCol>
         </BRow>
@@ -185,30 +182,26 @@ const getCategories = async () => {
 };
 
 const applyFilters = async () => {
-    // console.log("Selected Categories:", selectedCategories.value);
+    startProgress();
 
-    // startProgress();
     productStore.productCategoryId = selectedCategories.value;
+    productStore.minPrice = minPrice.value;
+    productStore.maxPrice = maxPrice.value;
 
     try {
-        await productStore.getProducts();
+        await productStore.getProducts(); // Fetch filtered products
 
-        const min = minPrice.value !== "" ? Number(minPrice.value) : 0;
-        const max = maxPrice.value !== "" ? Number(maxPrice.value) : Infinity;
+        filteredProducts.value = productStore.products || []; // Ensure filtered products are updated
 
-        filteredProducts.value = productStore.products.filter(product => {
-            const priceMatch = product.price >= min && product.price <= max;
-            return priceMatch;
-        });
-
-        showFilters.value = false;
+        // showFilters.value = false;
         showSuccessToast("Filters applied successfully.");
-        // finishProgress();
+        finishProgress();
     } catch (error) {
         failProgress();
         showErrorToast("Failed to apply filters.");
     }
 };
+
 
 const resetFilters = () => {
     selectedCategories.value = [];

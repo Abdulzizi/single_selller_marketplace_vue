@@ -46,7 +46,7 @@
                             <BRow class="mb-3">
                                 <BCol md="3" class="fw-semibold">Country</BCol>
                                 <BCol md="9">
-                                    <BFormInput id="form-postcode" v-model="formModel.country"
+                                    <BFormInput id="form-country" v-model="formModel.country"
                                         placeholder="Enter your country" />
                                 </BCol>
 
@@ -125,7 +125,6 @@
     </Layout>
 </template>
 
-
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import Layout from "@/layouts/main";
@@ -191,14 +190,12 @@ const orderPayload = computed(() => {
     return {
         user_id: user.id,
         product_detail_id: cartItems.value.length > 0 ? cartItems.value[0].product.product_detail_id : null,
-        delivery_details: {
-            full_name: formModel.value.fullName,
-            street: formModel.value.street,
-            apartment: formModel.value.apartment,
-            city: formModel.value.city,
-            postcode: formModel.value.postcode,
-            country: formModel.value.country,
-        },
+        // full_name: formModel.value.fullName,
+        street: formModel.value.street,
+        apartment: formModel.value.apartment,
+        city: formModel.value.city,
+        postcode: formModel.value.postcode,
+        country: formModel.value.country,
         payment_method: formModel.value.paymentMethod,
         payment_details: formModel.value.paymentMethod === "Credit Card"
             ? {
@@ -214,9 +211,10 @@ const orderPayload = computed(() => {
                 : {},
         details: cartItems.value.map(item => ({
             product_id: item.product.id,
-            product_detail_id: item.product.product_detail_id,
             quantity: item.quantity,
-            total_price: item.product.price * item.quantity,
+            is_added: true
+            // product_detail_id: item.product.product_detail_id,
+            // total_price: item.product.price * item.quantity,
         })),
         total_price: total.value,
     };
