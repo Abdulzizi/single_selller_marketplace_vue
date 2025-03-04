@@ -3,14 +3,7 @@ export const menuItems = [
     id: 1,
     label: "Dashboard",
     icon: "bx-home-circle",
-    subItems: [
-      {
-        id: 2,
-        label: "Default",
-        link: "/",
-        parentId: 1,
-      },
-    ],
+    link: "/admin/dashboard",
   },
   {
     id: 3,
@@ -19,39 +12,32 @@ export const menuItems = [
   },
   {
     id: 4,
-    label: "Master",
-    icon: "bx-shield-alt-2",
-    subItems: [
-      {
-        id: 5,
-        label: "User",
-        link: "/admin/user",
-        parentId: 4,
-      },
-      {
-        id: 6,
-        label: "Product Category",
-        link: "/admin/product-category",
-        parentId: 4,
-      },
-      {
-        id: 7,
-        label: "Products",
-        link: "/admin/product",
-        parentId: 4,
-      },
-      {
-        id: 8,
-        label: "Orders",
-        link: "/admin/orders",
-        parentId: 4,
-      },
-    ],
+    label: "User",
+    link: "/admin/user",
+    icon: "bx bx-user",
   },
   {
-    id: 8,
-    label: "MarketPlace",
-    icon: "bx-store",
-    link: "/",
+    id: 5,
+    label: "Product Category",
+    link: "/admin/product-category",
+    icon: "bx bx-purchase-tag",
   },
+  {
+    id: 6,
+    label: "Products",
+    link: "/admin/products",
+    icon: "bx bx-shopping-bag",
+  },
+  {
+    id: 7,
+    label: "Orders",
+    link: "/admin/orders",
+    icon: "bx bxs-receipt",
+  },
+  // {
+  //   id: 8,
+  //   label: "MarketPlace",
+  //   icon: "bx-store",
+  //   link: "/",
+  // },
 ];

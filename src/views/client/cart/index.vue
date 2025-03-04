@@ -77,7 +77,8 @@
                         </div>
 
                         <div class="d-flex flex-column justify-content-end mt-3">
-                            <BButton variant="success" class="me-2 py-2 fs-6 shadow-sm" @click="navigateToCheckout">
+                            <BButton variant="success" class="me-2 py-2 fs-6 shadow-sm" @click="navigateToCheckout"
+                                :disabled="!cartItems.length">
                                 ✅ Proceed to Checkout
                             </BButton>
                             <BButton variant="link" class="text-muted align-self-start" @click="navigateToProducts">

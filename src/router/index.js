@@ -6,13 +6,7 @@ import appConfig from "../app.config.json";
 const router = createRouter({
   history: createWebHistory(),
   routes,
-  // Use the HTML5 history API (i.e. normal-looking routes)
-  // instead of routes with hashes (e.g. example.com/#/about).
-  // This may require some server configuration in production:
-  // https://router.vuejs.org/en/essentials/history-mode.html#example-server-configurations
   mode: "history",
-  // Simulate native-like scroll behavior when navigating to a new
-  // route and using back/forward buttons.
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
       return savedPosition;
@@ -25,13 +19,37 @@ const router = createRouter({
 // Before each route evaluates...
 router.beforeEach((routeTo, routeFrom, next) => {
   const auth = useAuthStore();
+  const user = JSON.parse(localStorage.getItem("user"));
 
   // Check if auth is required on this route
   // (including nested routes).
   const authRequired = routeTo.matched.some((route) => route.meta.authRequired);
+  const restrictedTo = routeTo.matched.some((route) => route.meta.restrictedTo);
 
   // If auth isn't required for the route, just continue.
   if (!authRequired) return next();
+
+  if (restrictedTo) {
+    // Check if the user is restricted from this route
+    if (
+      user?.user_role_name === "Super Admin" &&
+      routeTo.meta.restrictedTo.includes("Super Admin")
+    ) {
+      // Prevent infinite loop by checking if already on the correct page
+      if (routeTo.name !== "admin dashboard") {
+        return next({ name: "admin dashboard" });
+      }
+    }
+
+    if (
+      user?.user_role_name === "Client" &&
+      routeTo.meta.restrictedTo.includes("Client")
+    ) {
+      if (routeTo.name !== "products") {
+        return next({ name: "products" });
+      }
+    }
+  }
 
   // // If auth is required and the user is logged in...
   // if (auth.loggedIn) {

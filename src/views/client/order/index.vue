@@ -21,9 +21,9 @@
                                 <BCard class="border-2 rounded-3 overflow-hidden order-card p-3 w-100">
                                     <BCardBody class="d-flex flex-column">
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <h6 class="fw-bold">Order #{{ order.id }}</h6>
+                                            <h6 class="fw-bold text-primary">{{ generateInvoiceId(order) }}</h6>
                                             <span class="badge" :class="statusBadge(order.status)">{{ order.status
-                                            }}</span>
+                                                }}</span>
                                         </div>
                                         <p class="text-muted">{{ formatDate(order.created_at) }}</p>
 
@@ -32,7 +32,7 @@
                                             <p v-if="order.payment_method" class="text-muted small">Paid via: {{
                                                 order.payment_method }}</p>
                                             <p v-if="order.street" class="text-muted small">Delivery: {{ order.street
-                                            }}, {{ order.city }}</p>
+                                                }}, {{ order.city }}</p>
                                         </div>
 
                                         <ul v-if="order.details.length" class="list-unstyled small">
@@ -41,6 +41,8 @@
                                                 }})
                                             </li>
                                         </ul>
+
+                                        <p class="fw-bold mt-2">Grand Total: {{ formatIDR(order.total_price) }}</p>
 
                                         <BButton variant="outline-primary" @click="viewOrderDetails(order)"
                                             class="w-100 fw-semibold mt-2">
@@ -104,6 +106,10 @@ const getOrders = async () => {
         failProgress();
         showErrorToast("Failed to fetch orders.");
     }
+};
+
+const generateInvoiceId = (order) => {
+    return `INV-${String(order.id).slice(0, 8)}`;
 };
 
 const viewOrderDetails = (order) => {

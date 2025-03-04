@@ -1,13 +1,6 @@
 import { useAuthStore } from "@/state/pinia";
 
 export default [
-  // {
-  //   path: "/",
-  //   name: "default",
-  //   meta: { title: "Dashboard", authRequired: true },
-  //   component: () => import("../views/dashboards/default"),
-  // },
-
   // Client
   {
     path: "/",
@@ -15,6 +8,7 @@ export default [
     meta: {
       title: "Product Catalog",
       authRequired: true,
+      restrictedTo: ["Super Admin"],
     },
     component: () => import("../views/client/index.vue"),
   },
@@ -25,13 +19,18 @@ export default [
     meta: {
       title: "Product Detail",
       authRequired: true,
+      restrictedTo: ["Super Admin"],
     },
     component: () => import("../views/client/product-detail"),
   },
   {
     path: "/cart",
     name: "cart",
-    meta: { title: "Cart", authRequired: true, restrictedTo: ["Super Admin"] },
+    meta: {
+      title: "Cart",
+      authRequired: true,
+      restrictedTo: ["Super Admin"],
+    },
     component: () => import("../views/client/cart"),
   },
   {
@@ -40,6 +39,7 @@ export default [
     meta: {
       title: "Checkout",
       authRequired: true,
+      restrictedTo: ["Super Admin"],
     },
     component: () => import("../views/client/checkout"),
   },
@@ -49,6 +49,7 @@ export default [
     meta: {
       title: "Checkout Success",
       authRequired: true,
+      restrictedTo: ["Super Admin"],
     },
     component: () => import("../views/client/checkout/success.vue"),
   },
@@ -58,6 +59,7 @@ export default [
     meta: {
       title: "Order List",
       authRequired: true,
+      restrictedTo: ["Super Admin"],
     },
     component: () => import("../views/client/order"),
   },
@@ -67,53 +69,72 @@ export default [
     meta: {
       title: "Order Detail",
       authRequired: true,
+      restrictedTo: ["Super Admin"],
     },
     component: () => import("../views/client/order-detail"),
   },
 
   // ADMIN
   {
+    path: "/admin/dashboard",
+    name: "admin dashboard",
+    meta: {
+      title: "Dashboard",
+      authRequired: true,
+      restrictedTo: ["Client"],
+    },
+    component: () => import("../views/dashboards/default"),
+  },
+  {
     path: "/admin/user",
     name: "user",
-    meta: { title: "Master User", authRequired: true },
+    meta: {
+      title: "Master User",
+      authRequired: true,
+      restrictedTo: ["Client"],
+    },
     component: () => import("../views/admin/user"),
   },
   {
     path: "/admin/product-category",
     name: "product-category",
-    meta: { title: "Master Product Category", authRequired: true },
+    meta: {
+      title: "Master Product Category",
+      authRequired: true,
+      restrictedTo: ["Client"],
+    },
     component: () => import("../views/admin/product-category"),
   },
   {
     path: "/admin/products",
     name: "product",
-    meta: { title: "Master Products", authRequired: true },
+    meta: {
+      title: "Master Products",
+      authRequired: true,
+      restrictedTo: ["Client"],
+    },
     component: () => import("../views/admin/product"),
   },
   {
     path: "/admin/product-form/:id?",
     name: "product-form",
-    meta: { title: "Form Product", authRequired: true },
+    meta: {
+      title: "Form Product",
+      authRequired: true,
+      restrictedTo: ["Client"],
+    },
     component: () => import("../views/admin/product/form"),
   },
   {
     path: "/admin/orders",
     name: "orders",
-    meta: { title: "Master Orders", authRequired: true },
+    meta: {
+      title: "Master Orders",
+      authRequired: true,
+      restrictedTo: ["Client"],
+    },
     component: () => import("../views/admin/order"),
   },
-
-  // CLIENT
-  // {
-  //   path: "/products",
-  //   name: "products",
-  //   meta: {
-  //     title: "List of products",
-  //     authRequired: true,
-  //
-  //   },
-  //   component: () => import("../views/client/index.vue"),
-  // },
 
   {
     path: "/login",

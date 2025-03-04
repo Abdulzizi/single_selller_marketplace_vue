@@ -3,6 +3,16 @@
         <PageHeader title="Marketplace" pageTitle="Products" />
 
         <BRow class="gx-4 gy-4">
+            <!-- Banner Section -->
+            <BCard class="shadow-sm border-0 rounded-3 p-0 overflow-hidden position-relative text-white">
+                <BCardImg :src="require('@/assets/images/marketplace-banner-2.jpg')" alt="Marketplace Banner"
+                    class="banner-image rounded-3" />
+                <BCardBody class="position-absolute top-50 start-50 translate-middle text-center">
+                    <h1 class="fw-bold display-4">Welcome to Our Marketplace</h1>
+                    <p class="fs-5">Find the best products at unbeatable prices!</p>
+                </BCardBody>
+            </BCard>
+
             <!-- Sidebar Filters (Mobile Responsive) -->
             <BCol lg="3" class="d-none d-lg-block">
                 <BCard v-if="showFilters" class="shadow-sm border-0 rounded-3 p-3" @click.self="showFilters = false">
@@ -133,6 +143,7 @@ import { useProductStore, useProductCategoryStore, useCartStore } from "../../st
 import { useRouter } from "vue-router";
 import { useProgress } from "@/helpers/progress";
 import { showSuccessToast, showErrorToast } from "@/helpers/alert.js";
+
 
 const { startProgress, finishProgress, failProgress } = useProgress();
 
@@ -318,5 +329,15 @@ input[type="number"] {
 .fade-enter,
 .fade-leave-to {
     opacity: 0;
+}
+
+/* Banner Styles */
+.banner-image {
+    width: 100%;
+    height: 500px;
+    object-fit: cover;
+    object-position: bottom;
+    filter: brightness(0.6);
+    /* border-radius: 12px; */
 }
 </style>

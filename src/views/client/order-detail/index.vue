@@ -10,7 +10,7 @@
                         ← Back to Orders
                     </a>
 
-                    <h5 class="fw-bold">Order #{{ order?.id || '-' }}</h5>
+                    <h5 class="fw-bold text-primary">{{ generateInvoiceId(order) }}</h5>
                     <p class="text-muted">
                         Status:
                         <span :class="getStatusClass(order?.status)">
@@ -53,7 +53,8 @@
                         <p><strong>Tax (10%):</strong> {{ order?.tax ? formatIDR(order.tax) : '-' }}</p>
                         <p><strong>Shipping:</strong> {{ order?.shipping_fee ? formatIDR(order.shipping_fee) : '-' }}
                         </p>
-                        <h5 class="fw-bold mt-3">Total: {{ order?.total_price ? formatIDR(order.total_price) : '-' }}
+                        <h5 class="fw-bold mt-3 text-success">Total: {{ order?.total_price ?
+                            formatIDR(order.total_price) : '-' }}
                         </h5>
                     </div>
 
@@ -102,6 +103,10 @@ const formatDate = (dateString) => {
     return dateString ? new Date(dateString).toLocaleDateString('id-ID', {
         year: 'numeric', month: 'long', day: 'numeric'
     }) : '-';
+};
+
+const generateInvoiceId = (order) => {
+    return `INV-${String(order.id).slice(0, 8)}`;
 };
 
 const formattedAddress = computed(() => {

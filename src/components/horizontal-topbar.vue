@@ -228,14 +228,14 @@ export default {
         </div>
 
         <!-- ORDER: Navigate to My Orders -->
-        <div class="dropdown d-none d-lg-inline-block ms-1">
+        <div class="dropdown d-none d-lg-inline-block ms-1" v-if="userRole !== 'Super Admin'">
           <BButton variant="white" type="button" class="btn header-item noti-icon" @click="goToMyOrder">
-            <i class="bx bx-package"></i>
+            <i class="bx bx-receipt"></i>
           </BButton>
         </div>
 
         <!-- CART: Navigate to Cart Page -->
-        <div class="dropdown d-none d-lg-inline-block ms-1 position-relative">
+        <div class="dropdown d-none d-lg-inline-block ms-1 position-relative" v-if="userRole !== 'Super Admin'">
           <BButton variant="white" type="button" class="btn header-item noti-icon" @click="goToCart">
             <i class="bx bx-cart"></i>
             <span v-if="cartItems.length > 0" class="cart-badge">
