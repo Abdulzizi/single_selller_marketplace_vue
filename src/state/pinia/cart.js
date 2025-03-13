@@ -21,11 +21,6 @@ export const useCartStore = defineStore("cart", {
       try {
         const user = JSON.parse(localStorage.getItem("user"));
 
-        // if (!user || !user.user_id) {
-        //   console.error("User ID not found");
-        //   return;
-        // }
-
         const url = `${this.apiUrl}/api/v1/carts?page=${this.current}&per_page=${this.perpage}&user_id=${user.id}`;
         const res = await axios.get(url);
 

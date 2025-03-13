@@ -19,7 +19,7 @@ export const useProductStore = defineStore("product", {
     },
     totalData: 0,
     current: 1,
-    perpage: 5,
+    perpage: 6,
     productCategoryId: "",
     minPrice: 0,
     maxPrice: 0,
@@ -30,7 +30,7 @@ export const useProductStore = defineStore("product", {
     openForm(newAction) {
       this.formAction.action = newAction;
     },
-    async getProducts() {
+    async getProducts(isLoadMore = false) {
       try {
         const productCategoryParam = this.productCategoryId.length
           ? this.productCategoryId.join(",")
@@ -38,6 +38,13 @@ export const useProductStore = defineStore("product", {
 
         const url = `${this.apiUrl}/api/v1/products?page=${this.current}&per_page=${this.perpage}&product_category_id=${productCategoryParam}&min_price=${this.minPrice}&max_price=${this.maxPrice}`;
         const res = await axios.get(url);
+
+        if (isLoadMore) {
+          this.products = [...this.products, ...res.data.data.list]; // Append new products
+        } else {
+          this.products = res.data.data.list; // Replace when not loading more
+          this.currentPage = 1; // reset page
+        }
 
         this.products = res.data.data.list;
         this.totalData = res.data.data.meta.total;

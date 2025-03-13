@@ -129,14 +129,21 @@
                             </BCard>
                         </BCol>
                     </BRow>
+                    <!-- Load More Button -->
+                    <BCol v-if="showLoadMore" class="text-center">
+                        <BButton variant="primary" class="fw-bold px-5 py-2" @click="loadMore">
+                            Load More
+                        </BButton>
+                    </BCol>
                 </BCard>
             </BCol>
+
         </BRow>
     </Layout>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import Layout from "@/layouts/main";
 import PageHeader from "@/components/page-header";
 import { useProductStore, useProductCategoryStore, useCartStore } from "../../state/pinia";
@@ -163,19 +170,48 @@ const maxPrice = ref(productStore.maxPrice);
 
 const filteredProducts = ref([]);
 
+const showLoadMore = computed(() => filteredProducts.value.length < productStore.totalData);
+
+const loadMore = async () => {
+    console.log("Loading more products...");
+
+    if (filteredProducts.value.length < productStore.totalData) { // Ensure more products exist
+        startProgress();
+        try {
+            productStore.current += 1; // Move to next page
+            await productStore.getProducts(true); // Fetch new products
+
+            // Ensure newly fetched products are different from existing ones
+            const newProducts = productStore.products.filter(
+                (newProd) => !filteredProducts.value.some((existingProd) => existingProd.id === newProd.id)
+            );
+
+            if (newProducts.length > 0) {
+                filteredProducts.value = [...filteredProducts.value, ...newProducts];
+            }
+
+            finishProgress();
+        } catch (error) {
+            failProgress();
+            showErrorToast("Failed to load more products.");
+        }
+    }
+};
+
 const getProducts = async () => {
     startProgress();
     try {
         await productStore.getProducts();
 
-        products.value = productStore.products || [];
-        filteredProducts.value = [...products.value];
+        filteredProducts.value = [...productStore.products];
+
         finishProgress();
     } catch (error) {
         failProgress();
-        showErrorToast("Failed to fetch products.");
+        showErrorToast("Something went wrong.");
     }
 };
+
 
 const getCategories = async () => {
     startProgress();
@@ -337,7 +373,7 @@ input[type="number"] {
     height: 500px;
     object-fit: cover;
     object-position: bottom;
-    filter: brightness(0.6);
+    /* fil ter: brightness(0.6); */
     /* border-radius: 12px; */
 }
 </style>
