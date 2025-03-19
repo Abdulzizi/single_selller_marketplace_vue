@@ -67,4 +67,7 @@ app.config.globalProperties.$Progress =
   app.config.globalProperties.$Progress || {};
 app.component("VueDatePicker", VueDatePicker);
 
+import { axiosInterceptors } from "@/core/interceptor/axios-interceptor"; // Impor fungsi setupInterceptors
+axiosInterceptors();
+
 app.mount("#app");

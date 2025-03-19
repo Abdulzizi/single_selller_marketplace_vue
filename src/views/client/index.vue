@@ -143,7 +143,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import Layout from "@/layouts/main";
 import PageHeader from "@/components/page-header";
 import { useProductStore, useProductCategoryStore, useCartStore } from "../../state/pinia";
@@ -159,7 +159,6 @@ const productCategoryStore = useProductCategoryStore();
 const cartStore = useCartStore();
 const router = useRouter();
 
-const products = ref([]);
 const categories = ref([]);
 
 const showFilters = ref(false);
@@ -229,7 +228,8 @@ const getCategories = async () => {
 };
 
 const applyFilters = async () => {
-    startProgress();
+    // startProgress();
+    // console.log(selectedCategories);
 
     productStore.productCategoryId = selectedCategories.value;
     productStore.minPrice = minPrice.value;
@@ -249,13 +249,23 @@ const applyFilters = async () => {
     }
 };
 
-
-const resetFilters = () => {
+const resetFilters = async () => {
+    productStore.productCategoryId = [];
     selectedCategories.value = [];
     minPrice.value = productStore.minPrice;
     maxPrice.value = productStore.maxPrice;
-    filteredProducts.value = [...products.value];
-    showSuccessToast("Filters reset successfully.");
+
+    try {
+        await productStore.getProducts(); // Fetch all products
+
+        filteredProducts.value = [...productStore.products]; // Reset to all products
+
+        showSuccessToast("Filters reset successfully.");
+        finishProgress();
+    } catch (error) {
+        failProgress();
+        showErrorToast("Failed to reset filters.");
+    }
 };
 
 const viewDetails = (product) => {

@@ -24,6 +24,7 @@ export const useProductStore = defineStore("product", {
     minPrice: 0,
     maxPrice: 0,
     maxImageSize: 3 * 1024 * 1024,
+    searchQuery: "",
   }),
 
   actions: {
@@ -36,7 +37,7 @@ export const useProductStore = defineStore("product", {
           ? this.productCategoryId.join(",")
           : "";
 
-        const url = `${this.apiUrl}/api/v1/products?page=${this.current}&per_page=${this.perpage}&product_category_id=${productCategoryParam}&min_price=${this.minPrice}&max_price=${this.maxPrice}`;
+        const url = `${this.apiUrl}/api/v1/products?page=${this.current}&per_page=${this.perpage}&product_category_id=${productCategoryParam}&min_price=${this.minPrice}&max_price=${this.maxPrice}&name=${this.searchQuery}`;
         const res = await axios.get(url);
 
         if (isLoadMore) {

@@ -1,10 +1,9 @@
-import axios from "axios";
-import { showErrorToast, showConfirmationDialog } from "@/helpers/alert";
+import { showConfirmationDialog, showErrorToast } from "@/helpers/alert";
 import { useAuthStore } from "@/state/pinia";
+import axios from "axios";
 
 export function axiosInterceptors() {
   const auth = useAuthStore();
-
   axios.interceptors.request.use(
     (config) => {
       const token = auth.getToken(); // Mengakses Pinia store dari globalProperties
@@ -13,7 +12,8 @@ export function axiosInterceptors() {
       // }
 
       if (token) {
-        config.headers["Authorization"] = `Bearer ${token}`; // Menambahkan token ke header
+        config.headers.Authorization = `Bearer ${token}`;
+        // Menambahkan token ke header
       }
 
       if (!config.headers["Content-Type"]) {
@@ -35,7 +35,14 @@ export function axiosInterceptors() {
       return response;
     },
     async (error) => {
-      if (error.response && [403, 401].includes(error.response.status)) {
+      if (
+        error.response &&
+        error.response.status === 403 &&
+        error.response.data.errors[0].includes("kadaluarsa")
+      ) {
+        await auth.refresh();
+        window.location.reload();
+      } else if (error.response && [403, 401].includes(error.response.status)) {
         // Menampilkan konfirmasi sebelum melakukan logout jika error 403 atau 401
         const confirmed = await showConfirmationDialog(
           "Ooops",
@@ -43,7 +50,7 @@ export function axiosInterceptors() {
         );
         if (confirmed) {
           await auth.logout(); // Menghapus token dari Pinia store dan localStorage
-          window.location.reload(); // Memuat ulang halaman
+          window.location.href = "/login"; // Memuat ulang halaman
         }
       } else {
         showErrorToast("Error", "Terjadi kesalahan pada response"); // Menampilkan toast error untuk kesalahan lainnya

@@ -2,75 +2,78 @@
     <Layout>
         <PageHeader :title="product ? product.name : 'Product Not Found'" pageTitle="Product Details" />
 
-        <BContainer>
-            <BRow v-if="product">
-                <!-- Product Image -->
-                <BCol md="6">
-                    <BCard>
-                        <BCardImg :src="product.photo_desktop_url" :alt="product.name" class="zoom-effect" top />
-                    </BCard>
-                </BCol>
+        <BRow v-if="product">
+            <!-- Product Image -->
+            <BCol md="6">
+                <BCard>
+                    <BCardImg :src="product.photo_desktop_url" :alt="product.name" class="zoom-effect" top />
+                </BCard>
+            </BCol>
 
-                <!-- Product Details -->
-                <BCol md="6">
-                    <BCard>
-                        <BCardBody>
-                            <h3 class="mb-3">{{ product.name }}</h3>
-                            <p class="text-muted">Category: <strong>{{ product.product_category_name }}</strong></p>
-                            <h4 class="highlighted-price">RP.{{ product.price.toLocaleString() }}</h4>
-                            <p class="mb-4">{{ product.description }}</p>
+            <!-- Product Details -->
+            <BCol md="6">
+                <BCard>
+                    <BCardBody>
+                        <a href="#" class="d-inline-block mb-3 fw-bold hover-underline"
+                            @click.prevent="$router.push({ name: 'products' })">
+                            ← Back to Marketplace
+                        </a>
 
-                            <!-- Product Quantity Control -->
-                            <div class="d-flex align-items-center mb-4">
-                                <h5 class="me-3 fw-bold">Quantity:</h5>
-                                <BButton variant="outline-danger" class="px-2 py-1" @click="decrementProductQuantity">
-                                    -
-                                </BButton>
-                                <span class="mx-3 fw-bold">{{ productQuantity }}</span>
-                                <BButton variant="outline-success" class="px-2 py-1" @click="incrementProductQuantity">
-                                    +
-                                </BButton>
-                            </div>
+                        <h3 class="mb-3">{{ product.name }}</h3>
+                        <p class="text-muted">Category: <strong>{{ product.product_category_name }}</strong></p>
+                        <h4 class="highlighted-price">RP.{{ product.price.toLocaleString() }}</h4>
+                        <p class="mb-4">{{ product.description }}</p>
 
-                            <!-- Product detail / Addon -->
-                            <div v-if="product.details && product.details.length > 0" class="mt-4">
-                                <h5 class="fw-bold">Available Add-ons:</h5>
-                                <BListGroup>
-                                    <BListGroupItem v-for="detail in product.details" :key="detail.id">
-                                        <div class="d-flex align-items-center">
-                                            <BFormCheckbox :model-value="detail.selected" @change="toggleAddon(detail)">
-                                                <strong>{{ detail.type }}</strong>: {{ detail.description }}
-                                                <span v-if="detail.price > 0" class="text-success"> (+RP.{{
-                                                    detail.price.toLocaleString() }})</span>
-                                            </BFormCheckbox>
-                                        </div>
-                                    </BListGroupItem>
-                                </BListGroup>
-                            </div>
-
-                            <BButton variant="success" class="d-none d-md-block mt-4 w-100 py-2" @click="addToCart">
-                                <i class="bi bi-cart-plus me-2"></i> Add To Cart
+                        <!-- Product Quantity Control -->
+                        <div class="d-flex align-items-center mb-4">
+                            <h5 class="me-3 fw-bold">Quantity:</h5>
+                            <BButton variant="outline-danger" class="px-2 py-1" @click="decrementProductQuantity">
+                                -
                             </BButton>
-                        </BCardBody>
-                    </BCard>
-                </BCol>
-            </BRow>
+                            <span class="mx-3 fw-bold">{{ productQuantity }}</span>
+                            <BButton variant="outline-success" class="px-2 py-1" @click="incrementProductQuantity">
+                                +
+                            </BButton>
+                        </div>
 
-            <!-- Product Not Found Message -->
-            <BRow v-else>
-                <BCol class="text-center py-5">
-                    <h4 class="text-danger">Product Not Found</h4>
-                    <p class="text-muted">The product you are looking for does not exist.</p>
-                </BCol>
-            </BRow>
+                        <!-- Product detail / Addon -->
+                        <div v-if="product.details && product.details.length > 0" class="mt-4">
+                            <h5 class="fw-bold">Available Add-ons:</h5>
+                            <BListGroup>
+                                <BListGroupItem v-for="detail in product.details" :key="detail.id">
+                                    <div class="d-flex align-items-center">
+                                        <BFormCheckbox :model-value="detail.selected" @change="toggleAddon(detail)">
+                                            <strong>{{ detail.type }}</strong>: {{ detail.description }}
+                                            <span v-if="detail.price > 0" class="text-success"> (+RP.{{
+                                                detail.price.toLocaleString() }})</span>
+                                        </BFormCheckbox>
+                                    </div>
+                                </BListGroupItem>
+                            </BListGroup>
+                        </div>
 
-            <!-- Sticky Add-to-Cart Button -->
-            <div class="d-md-none sticky-add-to-cart">
-                <BButton variant="success" class="w-100 py-2" :disabled="loading" @click="addToCart">
-                    <i class="bi bi-cart-plus me-2"></i> Add To Cart
-                </BButton>
-            </div>
-        </BContainer>
+                        <BButton variant="success" class="d-none d-md-block mt-4 w-100 py-2" @click="addToCart">
+                            <i class="bi bi-cart-plus me-2"></i> Add To Cart
+                        </BButton>
+                    </BCardBody>
+                </BCard>
+            </BCol>
+        </BRow>
+
+        <!-- Product Not Found Message -->
+        <BRow v-else>
+            <BCol class="text-center py-5">
+                <h4 class="text-danger">Product Not Found</h4>
+                <p class="text-muted">The product you are looking for does not exist.</p>
+            </BCol>
+        </BRow>
+
+        <!-- Sticky Add-to-Cart Button -->
+        <div class="d-md-none sticky-add-to-cart">
+            <BButton variant="success" class="w-100 py-2" :disabled="loading" @click="addToCart">
+                <i class="bi bi-cart-plus me-2"></i> Add To Cart
+            </BButton>
+        </div>
     </Layout>
 </template>
 
@@ -228,6 +231,11 @@ onMounted(fetchProduct);
 </script>
 
 <style scoped>
+.hover-underline:hover {
+    color: #0a58ca !important;
+    text-decoration: underline !important;
+}
+
 .zoom-effect {
     transition: transform 0.3s ease-in-out;
 }

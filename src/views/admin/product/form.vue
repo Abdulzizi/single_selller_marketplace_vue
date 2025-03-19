@@ -6,12 +6,13 @@
         <span v-else>
             <PageHeader title="Form Product" pageTitle="Product" />
         </span>
-        <BCard>
-            <BRow>
-                <BCol lg="6" md="12">
 
-                    <!-- Desktop Image Cropper -->
-                    <div v-if="desktopImageEdit" class="mb-4">
+        <BCard>
+            <!-- Image Uploaders in the Same Row -->
+            <BRow class="mb-4 align-items-start">
+                <!-- Desktop Image Uploader -->
+                <BCol md="6">
+                    <div v-if="desktopImageEdit" class="preview-container">
                         <div class="preview d-flex">
                             <div class="delete-button" @click="clearDesktopImage">
                                 <BButton class="btn btn-sm btn-danger"><i class="mdi mdi-delete-outline"></i></BButton>
@@ -19,15 +20,17 @@
                             <img :src="desktopImageEdit" alt="Desktop Image" class="mx-auto" />
                         </div>
                     </div>
-                    <div v-else class="mb-4">
+                    <div v-else>
                         <ImageCropper :aspectRatio="1 / 1"
-                            :uploadText="'Letakkan gambar desktop disini atau klik untuk mengunggah'"
-                            @update:imageUrl="desktopImageUrl = $event" @update:croppedImageUrl="desktopCroppedImageUrl = $event;
-                            formModel.photo_desktop = $event" />
+                            uploadText="Letakkan gambar desktop disini atau klik untuk mengunggah"
+                            @update:imageUrl="desktopImageUrl = $event"
+                            @update:croppedImageUrl="desktopCroppedImageUrl = $event; formModel.photo_desktop = $event" />
                     </div>
+                </BCol>
 
-                    <!-- Mobile Image Cropper -->
-                    <div v-if="mobileImageEdit" class="mb-4">
+                <!-- Mobile Image Uploader -->
+                <BCol md="6">
+                    <div v-if="mobileImageEdit" class="preview-container">
                         <div class="preview d-flex">
                             <div class="delete-button" @click="clearMobileImage">
                                 <BButton class="btn btn-sm btn-danger"><i class="mdi mdi-delete-outline"></i></BButton>
@@ -35,14 +38,19 @@
                             <img :src="mobileImageEdit" alt="Mobile Image" class="mx-auto" />
                         </div>
                     </div>
-                    <div v-else class="mb-4">
+                    <div v-else>
                         <ImageCropper :aspectRatio="1 / 1"
-                            :uploadText="'Letakkan gambar mobile disini atau klik untuk mengunggah'"
-                            @update:imageUrl="mobileImageUrl = $event" @update:croppedImageUrl="mobileCroppedImageUrl = $event;
-                            formModel.photo_mobile = $event" />
+                            uploadText="Letakkan gambar mobile disini atau klik untuk mengunggah"
+                            @update:imageUrl="mobileImageUrl = $event"
+                            @update:croppedImageUrl="mobileCroppedImageUrl = $event; formModel.photo_mobile = $event" />
                     </div>
+                </BCol>
+            </BRow>
 
-                    <BForm class="form-horizontal" role="form">
+            <!-- Form Fields Below the Image Uploaders -->
+            <BRow>
+                <BCol md="12">
+                    <BForm class="form-horizontal">
                         <BRow class="mb-3">
                             <label class="col-md-2 col-form-label" for="form-name">Product Name</label>
                             <BCol md="10">
@@ -55,13 +63,13 @@
                                 </template>
                             </BCol>
                         </BRow>
+
                         <BRow class="mb-3">
                             <label class="col-md-2 col-form-label" for="form-category">Category</label>
                             <BCol md="10">
                                 <BFormSelect class="form-select" v-model="formModel.product_category_id"
                                     :class="{ 'is-invalid': !!(errorList && errorList.product_category_id) }"
-                                    id="form-category"
-                                    :style="{ color: formModel.product_category_id === '' ? '#7c8094' : '' }">
+                                    id="form-category">
                                     <BFormSelectOption :value="''" :disabled="true">Choose Category</BFormSelectOption>
                                     <BFormSelectOption @change="updateCategory(cat)" v-for="cat in category" :key="cat"
                                         :value="cat.id">
@@ -76,26 +84,12 @@
                                 </template>
                             </BCol>
                         </BRow>
-                        <BRow class="mb-3">
-                            <label class="col-md-2 col-form-label" for="form-category">Status</label>
-                            <BCol md="10">
-                                <BFormSelect class="form-select" v-model="formModel.is_available"
-                                    :style="{ color: formModel.is_available === '' ? '#7c8094' : '' }">
-                                    <BFormSelectOption :value="''" :disabled="true">Choose Status</BFormSelectOption>
-                                    <BFormSelectOption value="1">Available</BFormSelectOption>
-                                    <BFormSelectOption value="0">Unavailable</BFormSelectOption>
-                                </BFormSelect>
-
-
-                            </BCol>
-                        </BRow>
-
 
                         <BRow class="mb-3">
-                            <label class="col-md-2 col-form-label" for="form-name">Price</label>
+                            <label class="col-md-2 col-form-label" for="form-price">Price</label>
                             <BCol md="10">
                                 <input type="number" class="form-control"
-                                    :class="{ 'is-invalid': !!(errorList && errorList.price), }" id="form-name"
+                                    :class="{ 'is-invalid': !!(errorList && errorList.price) }" id="form-price"
                                     placeholder="Enter Price" v-model="formModel.price" />
                                 <template v-if="!!(errorList && errorList.price)">
                                     <div class="invalid-feedback" v-for="(err, index) in errorList.price" :key="index">
@@ -104,14 +98,13 @@
                                 </template>
                             </BCol>
                         </BRow>
+
                         <BRow class="mb-3">
-                            <label class="col-md-2 col-form-label" for="form-name">Description</label>
+                            <label class="col-md-2 col-form-label" for="form-description">Description</label>
                             <BCol md="10">
-                                <input class="form-control" id="form-description" placeholder="Enter Description"
+                                <textarea class="form-control" id="form-description" placeholder="Enter Description"
                                     v-model="formModel.description"
-                                    :class="{ 'is-invalid': !!(errorList && errorList.description) }" />
-
-
+                                    :class="{ 'is-invalid': !!(errorList && errorList.description) }"></textarea>
                                 <template v-if="!!(errorList && errorList.description)">
                                     <div class="invalid-feedback" v-for="(err, index) in errorList.description"
                                         :key="index">
@@ -124,105 +117,80 @@
                 </BCol>
 
 
-                <BCol lg="6" md="12">
-                    <div class="table-responsive">
-                        <BTableSimple class="align-middle dt-responsive nowrap w-100 table-check" id="product-list">
-                            <BThead>
-                                <BTr>
-                                    <BTh scope="col">
-                                        <span class="d-flex justify-content-center">
-                                            <BButton class="btn btn-sm btn-soft-info" @click="addDetail"><i
-                                                    class="mdi mdi-plus"></i>
-                                            </BButton>
-                                        </span>
-                                    </BTh>
-                                    <BTh scope="col">Type</BTh>
-                                    <BTh scope="col">Description</BTh>
-                                    <BTh scope="col">Price</BTh>
-                                </BTr>
-                            </BThead>
-                            <BTbody>
-                                <BTr v-for="(detail, i) in details" :key="i">
-                                    <BTh>
-                                        <span class="d-flex justify-content-center">
-                                            <BButton @click="removeRow(detail.id, i)"
-                                                class="btn btn-sm btn-soft-danger">
-                                                <i class="mdi mdi-minus"></i>
-                                            </BButton>
-                                        </span>
-                                    </BTh>
-                                    <BTh>
-                                        <input class="form-control" v-model="detail.type"
-                                            :class="{ 'is-invalid': !!(errorList && errorList[`details.${i}.type`]) }"
-                                            placeholder="Enter Type" />
-                                        <template v-if="!!(errorList && errorList[`details.${i}.type`])">
-                                            <div class="invalid-feedback"
-                                                v-for="(err, index) in errorList[`details.${i}.type`]" :key="index">
-                                                <span>{{ err }}</span>
-                                            </div>
-                                        </template>
-                                    </BTh>
-                                    <BTh>
-                                        <input class="form-control" v-model="detail.description"
-                                            :class="{ 'is-invalid': !!(errorList && errorList[`details.${i}.description`]) }"
-                                            placeholder="Enter Description" />
-                                        <template v-if="!!(errorList && errorList[`details.${i}.description`])">
-                                            <div class="invalid-feedback"
-                                                v-for="(err, index) in errorList[`details.${i}.description`]"
-                                                :key="index">
-                                                <span>{{ err }}</span>
-                                            </div>
-                                        </template>
-                                    </BTh>
-                                    <BTh>
-                                        <input class="form-control" v-model="detail.price" type="number"
-                                            :class="{ 'is-invalid': !!(errorList && errorList[`details.${i}.price`]) }"
-                                            placeholder="Enter Price" />
-                                        <template v-if="!!(errorList && errorList[`details.${i}.price`])">
-                                            <div class="invalid-feedback"
-                                                v-for="(err, index) in errorList[`details.${i}.price`]" :key="index">
-                                                <span>{{ err }}</span>
-                                            </div>
-                                        </template>
-                                    </BTh>
-                                </BTr>
-                            </BTbody>
-                        </BTableSimple>
-                    </div>
-                </BCol>
-
             </BRow>
 
-            <BCardFooter>
+            <BRow>
+                <BCol md="12">
+                    <h5 class="mt-4">Additional Product Details</h5>
+                    <BTableSimple class="align-middle dt-responsive nowrap w-100 table-check">
+                        <BThead>
+                            <BTr>
+                                <BTh scope="col" class="text-center">
+                                    <BButton class="btn btn-sm btn-soft-info" @click="addDetail">
+                                        <i class="mdi mdi-plus"></i>
+                                    </BButton>
+                                </BTh>
+                                <BTh scope="col">Type</BTh>
+                                <BTh scope="col">Description</BTh>
+                                <BTh scope="col">Price</BTh>
+                            </BTr>
+                        </BThead>
+                        <BTbody>
+                            <BTr v-for="(detail, i) in details" :key="i">
+                                <BTh class="text-center">
+                                    <BButton @click="removeRow(detail.id, i)" class="btn btn-sm btn-soft-danger">
+                                        <i class="mdi mdi-minus"></i>
+                                    </BButton>
+                                </BTh>
+                                <BTh>
+                                    <input class="form-control" v-model="detail.type"
+                                        :class="{ 'is-invalid': !!errorList[`details.${i}.type`] }"
+                                        placeholder="Enter Type" />
+                                </BTh>
+                                <BTh>
+                                    <input class="form-control" v-model="detail.description"
+                                        :class="{ 'is-invalid': !!errorList[`details.${i}.description`] }"
+                                        placeholder="Enter Description" />
+                                </BTh>
+                                <BTh>
+                                    <input class="form-control" v-model="detail.price" type="number"
+                                        :class="{ 'is-invalid': !!errorList[`details.${i}.price`] }"
+                                        placeholder="Enter Price" />
+                                </BTh>
+                            </BTr>
+                        </BTbody>
+                    </BTableSimple>
+                </BCol>
+            </BRow>
+
+            <BRow>
                 <div class="d-flex justify-content-end">
-                    <span>
-                        <BButton variant="secondary" class="me-2"
-                            @click="router.push({ name: 'product' }); productStore.resetState()">Kembali
-                        </BButton>
-                        <BButton variant="primary" @click="addEditProduct">Simpan</BButton>
-                    </span>
+                    <BButton variant="secondary" class="me-2"
+                        @click="router.push({ name: 'product' }); productStore.resetState()">
+                        Kembali
+                    </BButton>
+                    <BButton variant="primary" @click="addEditProduct">Simpan</BButton>
                 </div>
-            </BCardFooter>
+            </BRow>
         </BCard>
-
-
     </Layout>
 </template>
 
 <script setup>
-
 import Layout from "@/layouts/main";
 import PageHeader from "@/components/page-header";
 import ImageCropper from "@/components/widgets/cropper";
 import { useProductCategoryStore, useProductStore } from "@/state/pinia";
 import { computed, onMounted, reactive, ref, watch } from "vue";
-import { showSuccessToast, showErrorToast, } from "@/helpers/alert.js";
-import { useProgress } from "@/helpers/progress"; // Import custom progress function
-import { useRouter } from "vue-router";
+import { showSuccessToast, showErrorToast } from "@/helpers/alert.js";
+import { useProgress } from "@/helpers/progress";
+import { useRouter, useRoute } from "vue-router";
 
 const router = useRouter();
-const categoryStore = useProductCategoryStore()
-const productStore = useProductStore()
+const route = useRoute();
+
+const categoryStore = useProductCategoryStore();
+const productStore = useProductStore();
 
 const details = ref([
     {
@@ -231,7 +199,7 @@ const details = ref([
         price: '',
         is_added: true
     }
-])
+]);
 
 const desktopImageEdit = ref("");
 const mobileImageEdit = ref("");
@@ -255,12 +223,10 @@ const formModel = reactive({
 });
 
 const action_button = ref();
-const statusCode = computed(() => productStore.response.status)
-const errorList = computed(() => productStore.response?.list || {})
-const errorMessage = computed(() => productStore.response?.message || "")
-
-const productById = computed(() => productStore.productById || {})
-
+const statusCode = computed(() => productStore.response.status);
+const errorList = computed(() => productStore.response?.list || {});
+const errorMessage = computed(() => productStore.response?.message || "");
+const productById = computed(() => productStore.productById || {});
 const action = computed(() => productStore.formAction.action);
 const { startProgress, finishProgress, failProgress } = useProgress();
 
@@ -268,27 +234,15 @@ const watchAction = () => {
     if (action.value === 'edit') {
         action_button.value = 'Change';
 
-        // Old data
         let product = productById.value;
-
-        // console.log("product", product);
 
         details.value = product.details.map(detail => ({
             ...detail,
             is_updated: true
         }));
 
-        if (product.photo_desktop) {
-            desktopImageEdit.value = product.photo_desktop;
-        } else {
-            desktopImageEdit.value = '';
-        }
-
-        if (product.photo_mobile) {
-            mobileImageEdit.value = product.photo_mobile;
-        } else {
-            mobileImageEdit.value = '';
-        }
+        desktopImageEdit.value = product.photo_desktop || '';
+        mobileImageEdit.value = product.photo_mobile || '';
 
         Object.assign(formModel, {
             id: product.id,
@@ -302,8 +256,8 @@ const watchAction = () => {
             photo_mobile: product.photo_mobile,
             details: details.value
         });
-        console.log("formModel", formModel);
 
+        console.log("formModel", formModel);
     }
 };
 
@@ -333,26 +287,64 @@ watch(formModel, (newFormModel) => {
     }
 }, { deep: true });
 
-
 const clearDesktopImage = () => {
     desktopImageEdit.value = '';
     formModel.photo_desktop = '';
+    showSuccessToast("Desktop image removed successfully.");
 };
 
 const clearMobileImage = () => {
     mobileImageEdit.value = '';
     formModel.photo_mobile = '';
+    showSuccessToast("Mobile image removed successfully.");
 };
 
-const category = computed(() => categoryStore.categories)
+const category = computed(() => categoryStore.categories);
 
 const getCategory = async () => {
-    await categoryStore.getCategories()
-}
+    try {
+        await categoryStore.getCategories();
+    } catch (error) {
+        showErrorToast("Failed to load categories.");
+        console.error("Error Response:", error.response);
+    }
+};
+
+const getProduct = async (id) => {
+    try {
+        await productStore.getProductById(id);
+        const product = productStore.productById; // Get the product object from store
+
+        desktopImageEdit.value = product.photo_desktop_url || "";
+        mobileImageEdit.value = product.photo_mobile_url || "";
+        if (product) {
+
+            Object.assign(formModel, {
+                id: product.id,
+                name: product.name,
+                product_category_id: product.product_category_id,
+                product_category_name: product.product_category_name,
+                is_available: product.is_available,
+                price: String(product.price),
+                description: product.description,
+                photo_desktop: product.photo_desktop_url,
+                photo_mobile: product.photo_mobile_url,
+                details: product.details ? [...product.details] : [],
+            });
+
+            console.log("Updated formModel:", formModel);
+        }
+    } catch (error) {
+        showErrorToast("Failed to load product.");
+        console.error("Error Response:", error.response);
+    }
+};
+
 
 const updateCategory = (selectedCategory) => {
     formModel.product_category_id = selectedCategory.id;
     formModel.product_category_name = selectedCategory.product_category_name;
+    showSuccessToast("Category updated successfully.");
 };
 
 const addDetail = () => {
@@ -361,49 +353,65 @@ const addDetail = () => {
         type: '',
         price: '',
         is_added: true
-    })
-}
+    });
+    showSuccessToast("New detail added.");
+};
 
 const addEditProduct = async () => {
     console.log("formModel", formModel);
+    startProgress();
 
     if (formModel.id) {
-        startProgress();
-        await productStore.updateProduct(formModel)
-        if (statusCode.value != 200) {
-            showErrorToast("Failed to update product", errorMessage.value);
+        try {
+            await productStore.updateProduct(formModel);
+            if (statusCode.value === 200) {
+                showSuccessToast("Product updated successfully!");
+                router.push({ name: 'product' });
+                finishProgress();
+            } else {
+                throw new Error(errorMessage.value);
+            }
+        } catch (error) {
+            showErrorToast("Failed to update product", error.message);
             failProgress();
-        } else {
-            router.push({ name: 'product' });
-            showSuccessToast("Product updated successfully!");
-            finishProgress();
         }
     } else {
-        startProgress();
-        await productStore.addProduct(formModel)
-        if (statusCode.value != 200) {
-            showErrorToast("Failed to add product", errorMessage.value);
+        try {
+            await productStore.addProduct(formModel);
+            if (statusCode.value === 200) {
+                showSuccessToast("Product added successfully!");
+                router.push({ name: 'product' });
+                finishProgress();
+            } else {
+                throw new Error(errorMessage.value);
+            }
+        } catch (error) {
+            showErrorToast("Failed to add product", error.message);
             failProgress();
-        } else {
-            router.push({ name: 'product' });
-            showSuccessToast("Product added successfully!");
-            finishProgress();
         }
     }
-}
+};
 
 const removeRow = (id, index) => {
     details.value.splice(index, 1);
-    formModel.details_deleted.push({
-        id
-    })
-}
+    formModel.details_deleted.push({ id });
+    showSuccessToast("Detail removed.");
+};
 
 onMounted(async () => {
-    await getCategory()
-    watchAction()
-})
+    const id = route.params.id;
+    if (id) {
+        await getProduct(id);
+    } else {
+        showErrorToast("Product ID is missing.");
+        router.push({ name: 'product' });
+    }
+
+    await getCategory();
+    watchAction();
+});
 </script>
+
 
 <style scoped lang="scss">
 .preview {
@@ -417,11 +425,10 @@ onMounted(async () => {
     max-width: 100%;
 }
 
-
 .delete-button {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 20px;
+    right: 15px;
     border: none;
     border-radius: 50%;
     width: 30px;
