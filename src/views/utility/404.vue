@@ -1,35 +1,22 @@
-<script>
-
-export default {
-
-}
-</script>
 <template>
-  <div class="account-pages my-5 pt-5">
-    <BContainer>
-      <BRow>
-        <BCol lg="12">
-          <div class="text-center mb-5">
-            <h1 class="display-2 fw-medium">
-              4<i class="bx bx-buoy bx-spin text-primary display-3"></i>4
-            </h1>
-            <h4 class="text-uppercase">Sorry, page not found</h4>
-            <div class="mt-5 text-center">
-              <router-link to="/">
-                <BButton variant="primary">Back to Dashboard</BButton>
-              </router-link>
-            </div>
-          </div>
-        </BCol>
-      </BRow>
-      <BRow class="justify-content-center">
-        <BCol md="8" xl="6">
-          <div>
-            <img src="@/assets/images/error-img.png" alt class="img-fluid" />
-          </div>
-        </BCol>
-      </BRow>
-    </BContainer>
+  <div class="flex items-center bg-zinc-900 min-h-screen px-4 py-12 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+    <div class="w-full text-center">
+      <div class="space-y-8">
+        <h1 class="text-5xl text-zinc-50 font-bold tracking-tighter sm:text-7xl transition-transform hover:scale-110">
+          404
+        </h1>
+        <p class="text-zinc-500 text-lg sm:text-xl font-medium">
+          Looks like you've ventured into the unknown digital realm.
+        </p>
+      </div>
+      <div class="mt-4">
+        <router-link to="/">
+          <p
+            class="inline-flex h-10 items-center rounded-md bg-zinc-100 px-8 text-sm font-medium text-zinc-950 shadow transition-colors hover:bg-zinc-100/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50">
+            Return to website
+          </p>
+        </router-link>
+      </div>
+    </div>
   </div>
 </template>
-
