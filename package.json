@@ -24,6 +24,7 @@
     "@fullcalendar/timegrid": "^6.1.9",
     "@fullcalendar/vue3": "^6.1.9",
     "@j-t-mcc/vue3-chartjs": "^2.0.0",
+    "@mdi/js": "^7.4.47",
     "@popperjs/core": "^2.11.8",
     "@vitejs/plugin-vue": "^5.1.4",
     "@vueform/multiselect": "^2.6.2",

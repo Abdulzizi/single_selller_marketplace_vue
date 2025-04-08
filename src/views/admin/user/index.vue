@@ -2,7 +2,6 @@
   <Layout>
     <PageHeader title="Users List" pageTitle="Users" />
 
-
     <BRow>
       <BCol lg="12">
         <BCard no-body>

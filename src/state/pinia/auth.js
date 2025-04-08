@@ -78,6 +78,28 @@ export const useAuthStore = defineStore("auth", {
     getUser() {
       return JSON.parse(localStorage.getItem("user") || "");
     },
+    async refresh() {
+      try {
+        const token = this.getToken();
+
+        if (!token) return;
+
+        const res = await axios.post(
+          `${this.apiUrl}/api/v1/auth/refresh`,
+          null,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        this.saveToken(res.data.data.access_token);
+        this.saveUser(res.data.data.user);
+      } catch (error) {
+        this.logout();
+      }
+    },
 
     async forgotPassword(email) {
       try {
