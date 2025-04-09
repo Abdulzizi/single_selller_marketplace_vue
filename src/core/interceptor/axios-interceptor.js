@@ -4,6 +4,12 @@ import axios from "axios";
 
 export function axiosInterceptors() {
   const auth = useAuthStore();
+
+  const forceLogout = async () => {
+    await auth.logout();
+    window.location.href = "/login";
+  };
+
   axios.interceptors.request.use(
     (config) => {
       const token = auth.getToken(); // Mengakses Pinia store dari globalProperties
@@ -25,35 +31,70 @@ export function axiosInterceptors() {
       return config;
     },
     (error) => {
-      showErrorToast("Request Error", "Terjadi kesalahan pada request"); // Menampilkan toast error
+      showErrorToast("Request Error", "Terjadi kesalahan pada request");
       return Promise.reject(error);
     }
   );
 
   axios.interceptors.response.use(
-    (response) => {
-      return response;
-    },
+    (response) => response,
+
     async (error) => {
+      const originalRequest = error.config;
+      console.log("🔄 Refreshing token...");
+
+      // Token kadaluarsa
       if (
         error.response &&
         error.response.status === 403 &&
-        error.response.data.errors[0].includes("kadaluarsa")
+        error.response.data.errors
       ) {
-        await auth.refresh();
-        window.location.reload();
-      } else if (error.response && [403, 401].includes(error.response.status)) {
-        // Menampilkan konfirmasi sebelum melakukan logout jika error 403 atau 401
+        if (!originalRequest._retry) {
+          originalRequest._retry = true;
+
+          try {
+            const refreshed = await auth.refresh();
+            console.log("✅ Refresh success?", refreshed);
+
+            if (refreshed) {
+              originalRequest.headers.Authorization = `Bearer ${auth.getToken()}`;
+              return axios(originalRequest);
+            } else {
+              await forceLogout();
+            }
+          } catch (refreshError) {
+            console.log("❌ Refresh failed", refreshError);
+
+            await forceLogout();
+          }
+        } else {
+          // Already retried once, force logout
+          await forceLogout();
+        }
+      }
+
+      // General 403/401 (maybe user tampered token or session expired)
+      else if (error.response && [403, 401].includes(error.response.status)) {
+        const errors = error.response?.data?.errors;
+        const message = Array.isArray(errors)
+          ? errors[0]
+          : typeof errors === "string"
+          ? errors
+          : "Saatnya Login Lagi!";
+
         const confirmed = await showConfirmationDialog(
           "Ooops",
-          error.response.data.errors[0] || "Terjadi kesalahan pada response"
+          message,
+          "Login Lagi",
+          "Tutup"
         );
+
         if (confirmed) {
-          await auth.logout(); // Menghapus token dari Pinia store dan localStorage
-          window.location.href = "/login"; // Memuat ulang halaman
+          await auth.logout();
+          window.location.href = "/login";
         }
       } else {
-        showErrorToast("Error", "Terjadi kesalahan pada response"); // Menampilkan toast error untuk kesalahan lainnya
+        showErrorToast("Error", "Something went wrong");
       }
 
       return Promise.reject(error);

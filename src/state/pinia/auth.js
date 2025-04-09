@@ -46,6 +46,7 @@ export const useAuthStore = defineStore("auth", {
     },
     async logout() {
       await this.removeToken();
+      await this.removeUser();
       this.userLogin = {};
     },
     async saveUserLogin() {
@@ -80,6 +81,8 @@ export const useAuthStore = defineStore("auth", {
     },
     async refresh() {
       try {
+        console.log("🔄 Refreshing token...");
+
         const token = this.getToken();
 
         if (!token) return;

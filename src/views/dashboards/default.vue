@@ -149,7 +149,7 @@ const getDashboardData = async () => {
       dashboardData.value = [];
     }
 
-    console.log(`Dashboard Data:`, dashboardData.value);
+    // console.log(`Dashboard Data:`, dashboardData.value);
   } catch (error) {
     failProgress();
     showErrorToast("Something went wrong.");

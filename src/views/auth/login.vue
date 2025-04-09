@@ -39,37 +39,6 @@
               <div class="mt-3 d-grid">
                 <BButton type="submit" @click="login" variant="primary" class="btn-block">Log In</BButton>
               </div>
-              <!-- <div class="mt-4 text-center">
-                <h5 class="font-size-14 mb-3">Sign in with</h5>
-
-                <ul class="list-inline">
-                  <li class="list-inline-item">
-                    <BLink href="javascript: void(0);" class="
-                        social-list-item
-                        bg-primary
-                        text-white
-                        border-primary
-                      ">
-                      <i class="mdi mdi-facebook"></i>
-                    </BLink>
-                  </li>
-                  <li class="list-inline-item">
-                    <BLink href="javascript: void(0);" class="social-list-item bg-info text-white border-info">
-                      <i class="mdi mdi-twitter"></i>
-                    </BLink>
-                  </li>
-                  <li class="list-inline-item">
-                    <BLink href="javascript: void(0);" class="
-                        social-list-item
-                        bg-danger
-                        text-white
-                        border-danger
-                      ">
-                      <i class="mdi mdi-google"></i>
-                    </BLink>
-                  </li>
-                </ul>
-              </div> -->
               <div class="mt-4 text-center">
                 <router-link to="/forgot-password" class="text-muted">
                   <i class="mdi mdi-lock me-1"></i> Forgot your password?
@@ -106,6 +75,7 @@ const formModel = reactive({
 const statusCode = computed(() => authStore.response.status);
 const errorList = computed(() => authStore.response?.list || {});
 const errorMessage = computed(() => authStore.response?.message || "");
+
 const login = async () => {
   startProgress();
   try {
