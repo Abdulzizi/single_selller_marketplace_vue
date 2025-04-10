@@ -31,6 +31,16 @@ export default [
     meta: { title: "Products List Page", authRequired: false },
     component: () => import("../views/admin/products"),
   },
+  {
+    path: "/admin/product-form/:id?",
+    name: "product-form",
+    meta: {
+      title: "Form Product",
+      authRequired: false,
+      //restrictedTo: ["Client"],
+    },
+    component: () => import("../views/admin/products/form.vue"),
+  },
 
   {
     path: "/admin/user",

@@ -42,13 +42,16 @@ const paginate = async (page) => {
     await getProducts();
 };
 
-const redirectToForm = (mode, id = null) => {
-    if (mode === "edit" && id) {
-        router.push({ name: "ProductEdit", params: { id } });
-    } else {
-        router.push({ name: "ProductAdd" });
-    }
-};
+const addProduct = () => {
+    productStore.openForm('add')
+    router.push({ name: 'product-form', params: { product: '' } });
+}
+
+const editProduct = async (id) => {
+    productStore.openForm('edit')
+    router.push({ name: 'product-form', params: { id } });
+    await productStore.getProductById(id)
+}
 
 const deleteProduct = async (id) => {
     const isConfirmed = await showDeleteConfirmationDialog({
@@ -93,7 +96,7 @@ onMounted(() => {
                     </div>
                     <div class="w-full md:w-72 flex justify-end">
                         <!-- Tombol trigger form -->
-                        <Button @click="redirectToForm('add')" variant="solid" color="primary">
+                        <Button @click="addProduct" variant="solid" color="primary">
                             Tambah Product
                         </Button>
 
@@ -186,8 +189,7 @@ onMounted(() => {
                                     <!-- Actions -->
                                     <td class="p-3">
                                         <div class="flex gap-2 justify-end">
-                                            <Button @click="redirectToForm('edit', row.id)" variant="outline"
-                                                color="secondary">
+                                            <Button @click="editProduct(row.id)" variant="outline" color="secondary">
                                                 Edit
                                             </Button>
                                             <Button @click="deleteProduct(row.id)" variant="outline" color="error">
