@@ -72,7 +72,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
-import { mdiHome, mdiAccountGroup } from "@mdi/js";
+import { mdiHome, mdiAccountGroup, mdiTextBoxMultipleOutline } from "@mdi/js";
 
 // Ambil route aktif
 const route = useRoute();
@@ -120,8 +120,8 @@ const menus = ref([
         label: "Users",
         icon: mdiAccountGroup,
         submenu: [
-            { label: "User List", to: "/user" },
-            { label: "Add User", to: "/404" },
+            { label: "User List", to: "/admin/user" },
+            // { label: "Add User", to: "/404" },
             {
                 label: "Settings",
                 submenu: [
@@ -130,6 +130,14 @@ const menus = ref([
                     { label: "Upgrade to PRO", to: "/404" },
                 ],
             },
+        ],
+    },
+    {
+        label: "Products",
+        icon: mdiTextBoxMultipleOutline,
+        submenu: [
+            { label: "Products List", to: "/admin/products" },
+            { label: "Products Category List", to: "/404" },
         ],
     },
 ]);

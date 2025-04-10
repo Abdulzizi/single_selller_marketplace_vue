@@ -1,26 +1,44 @@
 <script setup>
-import { useUserStore } from "@/state/pinia";
 import { ref, onMounted } from "vue";
+
 import Layout from "@/layouts/main.vue";
 import Modal from "@/components/widgets/Modal.vue";
 import Button from "@/components/widgets/Button";
 import InputField from "@/components/widgets/Input";
-import FormUser from "@/views/user/form.vue"; // Import file FormUser
+import FormUser from "@/views/admin/user/form.vue"; // Import file FormUser
 
+import { useUserStore } from "@/state/pinia";
 import { showSuccessToast, showDeleteConfirmationDialog } from "@/helpers/alert.js";
+
 const userStore = useUserStore();
 const rows = ref([]);
+const roles = ref([]);
 const userModalRef = ref(null);
 const selectedUser = ref(null);
 const userModalTitle = ref("");
 
 const getUsers = async () => {
     await userStore.getUsers();
-    rows.value = userStore.users || [];
+    if (userStore.users) {
+        rows.value = userStore.users || [];
+    } else {
+        rows.value = [];
+    }
+};
+
+const getRoles = async () => {
+    await userStore.getRoles();
+    if (userStore.roles) {
+        roles.value = userStore.roles || [];
+    } else {
+        roles.value = [];
+    }
 };
 
 const searchData = async () => {
     await userStore.changePage(1);
+
+    await getUsers();
 };
 
 const paginate = async (page) => {
@@ -64,6 +82,7 @@ const deleteUser = async (id) => {
 
 onMounted(() => {
     getUsers();
+    getRoles();
 });
 </script>
 
@@ -86,7 +105,7 @@ onMounted(() => {
                         data-orientation="horizontal">
                         <div class="relative w-full md:w-72">
                             <InputField v-model="userStore.searchQuery" placeholder="Search..." name="search"
-                                v-debounce:500="searchData"/>
+                                v-debounce:500="searchData" />
                         </div>
                     </div>
                     <div class="w-full md:w-72 flex justify-end">
@@ -100,7 +119,8 @@ onMounted(() => {
                                 <h1 class="text-xl font-bold">{{ userModalTitle }}</h1>
                             </template>
                             <template #body>
-                                <FormUser ref="formUserRef" :user="selectedUser" @refresh="getUsers" @close="closeUserModal" />
+                                <FormUser ref="formUserRef" :user="selectedUser" @refresh="getUsers"
+                                    @close="closeUserModal" />
                             </template>
                             <template #footer>
                                 <div class="flex justify-end gap-2">
@@ -121,10 +141,14 @@ onMounted(() => {
                         <thead
                             class="border-b border-gray-200 bg-gray-100 text-sm font-medium text-gray-600 dark:bg-gray-900">
                             <tr>
-                                <th class="cursor-pointer px-2.5 py-2 text-start font-medium"><small
+                                <th class="cursor-default px-2.5 py-2 text-start font-medium"><small
                                         class="font-sans antialiased text-sm text-current flex items-center justify-between gap-2 opacity-70">User</small>
                                 </th>
-                                <th class="cursor-pointer px-2.5 py-2 text-start font-medium"><small
+                                <th class="cursor-default px-2.5 py-2 text-start font-medium"><small
+                                        class="font-sans antialiased text-sm text-current flex items-center justify-between gap-2 opacity-70">
+                                        Roles
+                                    </small></th>
+                                <th class="cursor-default px-2.5 py-2 text-start font-medium"><small
                                         class="font-sans antialiased text-sm text-current flex items-center justify-between gap-2 opacity-70">
                                     </small></th>
                             </tr>
@@ -145,6 +169,13 @@ onMounted(() => {
                                                 <small class="font-sans antialiased text-sm text-current opacity-70">
                                                     {{ row.email }}</small>
                                             </div>
+                                        </div>
+                                    </td>
+                                    <td class="p-3">
+                                        <div class="flex flex-col">
+                                            <small class="font-sans antialiased text-sm text-current">
+                                                {{ row.user_role_name }}
+                                            </small>
                                         </div>
                                     </td>
                                     <td class="p-3">
@@ -182,9 +213,9 @@ onMounted(() => {
                             data-shape="default" data-width="default" :disabled="userStore.current === 1"
                             @click="paginate(userStore.current - 1)">Previous</button><button
                             class="inline-flex items-center justify-center border align-middle select-none font-sans font-medium text-center transition-all duration-300 ease-in disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed data-[shape=pill]:rounded-full data-[width=full]:w-full focus:shadow-none text-sm rounded-md py-1.5 px-3 shadow-sm hover:shadow bg-transparent border-gray-200 text-gray-800 hover:bg-gray-200"
-                            data-shape="default" data-width="default" :disabled="userStore.current >=
-                                Math.ceil(userStore.totalData / userStore.perpage)
-                                " @click="paginate(userStore.current + 1)">Next</button></div>
+                            data-shape="default" data-width="default"
+                            :disabled="userStore.current >= userStore.totalPage" @click=" paginate(userStore.current +
+                                1)">Next</button></div>
                 </div>
             </div>
 

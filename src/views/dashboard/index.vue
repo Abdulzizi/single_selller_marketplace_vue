@@ -1,7 +1,7 @@
 <script setup>
 import Layout from "@/layouts/main.vue";
 import Datepicker from "@/components/widgets/DatePicker";
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import QuillEditor from "@/components/widgets/Quill";
 import Select from "@/components/widgets/Select";
 const errorMessages = ref([]); // Simpan error jika ada
@@ -66,59 +66,59 @@ const email = ref("");
         </div>
 
         <div data-stepper-container data-initial-step="1" class="stepper-container">
-  <div class="stepper">
-    <div aria-disabled="false" data-step class="group step">  <!-- Tambahkan `group` di HTML -->
-      <div class="relative">
-        <span class="step-circle">1</span>
-      </div>
-      <div class="step-line"></div>
-    </div>
-    <div aria-disabled="true" data-step class="group step">  <!-- Tambahkan `group` di HTML -->
-      <div class="relative">
-        <span class="step-circle">2</span>
-      </div>
-      <div class="step-line"></div>
-    </div>
-    <div aria-disabled="true" data-step class="group step">  <!-- Tambahkan `group` di HTML -->
-      <div class="relative">
-        <span class="step-circle">3</span>
-      </div>
-    </div>
-  </div>
+            <div class="stepper">
+                <div aria-disabled="false" data-step class="group step"> <!-- Tambahkan `group` di HTML -->
+                    <div class="relative">
+                        <span class="step-circle">1</span>
+                    </div>
+                    <div class="step-line"></div>
+                </div>
+                <div aria-disabled="true" data-step class="group step"> <!-- Tambahkan `group` di HTML -->
+                    <div class="relative">
+                        <span class="step-circle">2</span>
+                    </div>
+                    <div class="step-line"></div>
+                </div>
+                <div aria-disabled="true" data-step class="group step"> <!-- Tambahkan `group` di HTML -->
+                    <div class="relative">
+                        <span class="step-circle">3</span>
+                    </div>
+                </div>
+            </div>
 
-  <div class="mt-8">
-    <div data-step-content="1" class="step-content active">
-      <p class="text-xl font-semibold mb-4">Step 1 Content</p>
-      <p class="text-slate-500">This is the content for step 1. Add whatever content you need here.</p>
-    </div>
-    <div data-step-content="2" class="step-content">
-      <p class="text-xl font-semibold mb-4">Step 2 Content</p>
-      <p class="text-slate-500">This is the content for step 2. Add whatever content you need here.</p>
-    </div>
-    <div data-step-content="3" class="step-content">
-      <p class="text-xl font-semibold mb-4">Step 3 Content</p>
-      <p class="text-slate-500">This is the content for step 3. Add whatever content you need here.</p>
-    </div>
-  </div>
+            <div class="mt-8">
+                <div data-step-content="1" class="step-content active">
+                    <p class="text-xl font-semibold mb-4">Step 1 Content</p>
+                    <p class="text-slate-500">This is the content for step 1. Add whatever content you need here.</p>
+                </div>
+                <div data-step-content="2" class="step-content">
+                    <p class="text-xl font-semibold mb-4">Step 2 Content</p>
+                    <p class="text-slate-500">This is the content for step 2. Add whatever content you need here.</p>
+                </div>
+                <div data-step-content="3" class="step-content">
+                    <p class="text-xl font-semibold mb-4">Step 3 Content</p>
+                    <p class="text-slate-500">This is the content for step 3. Add whatever content you need here.</p>
+                </div>
+            </div>
 
-  <div class="mt-6 flex w-full justify-between gap-4">
-    <button data-stepper-prev class="step-btn">Previous</button>
-    <button data-stepper-next class="step-btn">Next</button>
-  </div>
-</div>
+            <div class="mt-6 flex w-full justify-between gap-4">
+                <button data-stepper-prev class="step-btn">Previous</button>
+                <button data-stepper-next class="step-btn">Next</button>
+            </div>
+        </div>
 
 
 
-<div class="dropdown" data-placement="bottom-start">
-  <button data-toggle="dropdown" aria-expanded="false" class="btn-dropdown">
-    Open
-  </button>
-  <div data-role="menu" class="dropdown-menu hidden  ">
-    <a href="#" class="dropdown-item">Add Team</a>
-    <a href="#" class="dropdown-item">Add Project</a>
-    <a href="#" class="dropdown-item">My Profile</a>
-  </div>
-</div>
+        <div class="dropdown" data-placement="bottom-start">
+            <button data-toggle="dropdown" aria-expanded="false" class="btn-dropdown">
+                Open
+            </button>
+            <div data-role="menu" class="dropdown-menu hidden  ">
+                <a href="#" class="dropdown-item">Add Team</a>
+                <a href="#" class="dropdown-item">Add Project</a>
+                <a href="#" class="dropdown-item">My Profile</a>
+            </div>
+        </div>
 
 
         <div class="">
@@ -184,11 +184,13 @@ const email = ref("");
         <div class="">
             <div class="mb-4 pb-2">
 
-                        <ImageCropper :aspectRatio="16 / 9" :inputAspectRatio="true" :text="'Letakkan gambar disini atau klik untuk mengunggah'"/>
+                <ImageCropper :aspectRatio="16 / 9" :inputAspectRatio="true"
+                    :text="'Letakkan gambar disini atau klik untuk mengunggah'" />
             </div>
             <div class="mb-4 pb-2">
 
-                        <ImageCropper :aspectRatio="16 / 9" :inputAspectRatio="true" :multiple=true :text="'Letakkan gambar disini atau klik untuk mengunggah secara banyak'"/>
+                <ImageCropper :aspectRatio="16 / 9" :inputAspectRatio="true" :multiple=true
+                    :text="'Letakkan gambar disini atau klik untuk mengunggah secara banyak'" />
             </div>
 
             <!-- Input Teks -->

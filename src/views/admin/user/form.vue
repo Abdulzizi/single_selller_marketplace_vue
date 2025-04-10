@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, computed, watch } from "vue";
+import { ref, reactive, watch, onMounted } from "vue";
 import { required, email, minLength } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import { useUserStore } from "@/state/pinia";
@@ -7,9 +7,26 @@ import InputField from "@/components/widgets/Input";
 import Button from "@/components/widgets/Button";
 import ImageCropper from "@/components/widgets/Cropper";
 import { showSuccessToast, showErrorToast } from "@/helpers/alert.js";
+import Select from '@/components/widgets/Select.vue'
 
 const userStore = useUserStore();
 const emits = defineEmits(["refresh", "close"]);
+const roles = ref([]);
+
+const getRoles = async () => {
+    try {
+        await userStore.getRoles();
+        roles.value = userStore.roles || [];
+
+        console.log(`Roles: ${JSON.stringify(roles.value, null, 2)}`);
+
+    } catch (err) {
+        console.error("Error loading roles:", err);
+        roles.value = [];
+    }
+};
+
+const selectedRoles = ref('');
 
 const props = defineProps({
     user: Object
@@ -21,6 +38,7 @@ const formModel = reactive({
     email: "",
     password: "",
     photo: "",
+    user_roles_id: "",
 });
 
 const imageUrl = ref("");
@@ -40,12 +58,14 @@ watch(() => props.user, (newUser) => {
         formModel.name = newUser.name;
         formModel.email = newUser.email;
         formModel.password = "";
+        formModel.user_roles_id = newUser.user_roles_id;
         imageUrl.value = newUser.photo_url;
     } else {
         formModel.id = "";
         formModel.name = "";
         formModel.email = "";
         formModel.password = "";
+        formModel.user_roles_id = "";
         imageUrl.value = "";
     }
 }, { immediate: true });
@@ -72,8 +92,10 @@ const saveUser = async () => {
     }
 };
 
-defineExpose({
-    saveUser
+defineExpose({ saveUser });
+
+onMounted(() => {
+    getRoles();
 });
 </script>
 
@@ -82,7 +104,8 @@ defineExpose({
         <div class="mb-4">
             <label class="text-sm font-bold">Foto</label>
             <ImageCropper :imageUrl="imageUrl" :aspectRatio="16 / 9" :inputAspectRatio="true"
-                @update:imageUrl="imageUrl = $event" @update:croppedImageUrl="croppedImageUrl = $event; formModel.photo = $event;" />
+                @update:imageUrl="imageUrl = $event"
+                @update:croppedImageUrl="croppedImageUrl = $event; formModel.photo = $event;" />
         </div>
 
         <div class="mb-4">
@@ -105,6 +128,11 @@ defineExpose({
                 <span v-for="(err, index) in v$.password.$errors" :key="index">{{ err.$message }}</span>
             </div>
         </div>
+
+        <Select v-model="formModel.user_roles_id" :label="'Roles'" :placeholder="'Choose Roles...'" :options="roles.map(role => ({
+            value: role.id,
+            label: role.name
+        }))" :errors="[]" />
 
         <!-- <div class="flex justify-end gap-2">
             <Button @click="$emit('close')" variant="outline" color="secondary">Close</Button>
