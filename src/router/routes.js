@@ -27,7 +27,7 @@ export default [
 
   {
     path: "/admin/products",
-    name: "admin product list",
+    name: "admin-product-list",
     meta: { title: "Products List Page", authRequired: false },
     component: () => import("../views/admin/products"),
   },

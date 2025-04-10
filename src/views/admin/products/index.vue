@@ -1,76 +1,3 @@
-<script setup>
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
-
-import Layout from "@/layouts/main.vue";
-import Button from "@/components/widgets/Button";
-import InputField from "@/components/widgets/Input";
-import Modal from "@/components/widgets/Modal.vue";
-
-import { useProductStore } from "@/state/pinia/product";
-import { showSuccessToast, showDeleteConfirmationDialog } from "@/helpers/alert.js";
-
-const productStore = useProductStore();
-const router = useRouter();
-
-const rows = ref([]);
-
-const detailModalRef = ref(null);
-const selectedProductDetails = ref([]);
-
-const openDetailModal = (details) => {
-    selectedProductDetails.value = Array.isArray(details) ? details : [];
-    detailModalRef.value.openModal();
-};
-
-const getProducts = async () => {
-    try {
-        await productStore.getProducts();
-        rows.value = productStore.products || [];
-    } catch (error) {
-        console.error(error);
-    }
-};
-
-const searchData = async () => {
-    await productStore.changePage(1);
-    await getProducts();
-};
-
-const paginate = async (page) => {
-    await productStore.changePage(page);
-    await getProducts();
-};
-
-const addProduct = () => {
-    productStore.openForm('add')
-    router.push({ name: 'product-form', params: { product: '' } });
-}
-
-const editProduct = async (id) => {
-    productStore.openForm('edit')
-    router.push({ name: 'product-form', params: { id } });
-    await productStore.getProductById(id)
-}
-
-const deleteProduct = async (id) => {
-    const isConfirmed = await showDeleteConfirmationDialog({
-        title: "Delete Product",
-        message: "Are you sure you want to delete this product?",
-    });
-
-    if (isConfirmed) {
-        await productStore.deleteProduct(id);
-        await getProducts();
-        showSuccessToast("Product deleted successfully!");
-    }
-};
-
-onMounted(() => {
-    getProducts();
-});
-</script>
-
 <template>
     <Layout>
         <template #title>Products Data </template>
@@ -180,10 +107,24 @@ onMounted(() => {
 
                                     <!-- Details -->
                                     <td class="p-3">
-                                        <Button size="sm" @click="openDetailModal(row.details)" variant="outline"
-                                            color="primary">
-                                            View Details
-                                        </Button>
+                                        <small class="font-sans text-sm text-current">
+                                            <template v-if="row.details && row.details.length > 3">
+                                                {{
+                                                    countDetailsByType(row.details)
+                                                        .map(([type, count]) => `${count} ${type}`)
+                                                        .join(', ')
+                                                }}
+                                            </template>
+                                            <template v-else-if="row.details && row.details.length > 0">
+                                                {{
+                                                    row.details.map(detail => `${detail.type}:
+                                                ${detail.description}`).join(' | ')
+                                                }}
+                                            </template>
+                                            <template v-else>
+                                                -
+                                            </template>
+                                        </small>
                                     </td>
 
                                     <!-- Actions -->
@@ -209,41 +150,6 @@ onMounted(() => {
                         </tbody>
                     </table>
 
-                    <!-- Modal -->
-
-                    <Modal ref="detailModalRef" size="md">
-                        <template #title>
-                            Product Details
-                        </template>
-
-                        <template #body v-if="selectedProductDetails.length > 0">
-                            <div class="space-y-3 max-h-72 overflow-y-auto">
-                                <template v-if="selectedProductDetails.length > 0">
-                                    <div v-for="(detail, idx) in selectedProductDetails" :key="idx"
-                                        class="rounded border p-3">
-                                        <p class="text-sm"><strong>Type:</strong> {{ detail.type }}</p>
-                                        <p class="text-sm"><strong>Description:</strong> {{ detail.description }}</p>
-                                        <p class="text-sm text-green-600">
-                                            <strong>Price:</strong> Rp {{ detail.price.toLocaleString("id-ID") }}
-                                        </p>
-                                    </div>
-                                </template>
-                                <template v-else>
-                                    <p class="text-sm text-gray-500">No details found for this product.</p>
-                                </template>
-                            </div>
-                        </template>
-                        <template #body v-else>
-                            <p class="text-sm text-gray-500">No details found for this product.</p>
-                        </template>
-
-                        <template #footer>
-                            <div class="flex justify-end">
-                                <Button variant="outline" @click="detailModalRef.closeModal()">Close</Button>
-                            </div>
-                        </template>
-                    </Modal>
-
                 </div>
                 <div class="flex items-center justify-between border-gray-200 py-4"><small
                         class="font-sans antialiased text-sm text-current">Page {{ productStore.totalPage != 0 ?
@@ -264,3 +170,76 @@ onMounted(() => {
         </div>
     </Layout>
 </template>
+
+<script setup>
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+
+import Layout from "@/layouts/main.vue";
+import Button from "@/components/widgets/Button";
+import InputField from "@/components/widgets/Input";
+
+import { useProductStore } from "@/state/pinia/product";
+import { showSuccessToast, showDeleteConfirmationDialog } from "@/helpers/alert.js";
+
+const productStore = useProductStore();
+const router = useRouter();
+
+const rows = ref([]);
+
+
+const getProducts = async () => {
+    try {
+        await productStore.getProducts();
+        rows.value = productStore.products || [];
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+const searchData = async () => {
+    await productStore.changePage(1);
+    await getProducts();
+};
+
+const paginate = async (page) => {
+    await productStore.changePage(page);
+    await getProducts();
+};
+
+const addProduct = () => {
+    productStore.openForm('add')
+    router.push({ name: 'product-form', params: { product: '' } });
+}
+
+const editProduct = async (id) => {
+    productStore.openForm('edit')
+    router.push({ name: 'product-form', params: { id } });
+    await productStore.getProductById(id)
+}
+
+const deleteProduct = async (id) => {
+    const isConfirmed = await showDeleteConfirmationDialog("Delete Product", "Are you sure you want to delete this product?");
+
+    if (isConfirmed) {
+        await productStore.deleteProduct(id);
+        await getProducts();
+        showSuccessToast("Product deleted successfully!");
+    }
+};
+
+const countDetailsByType = (details) => {
+    const counts = {};
+
+    details.forEach((detail) => {
+        const type = detail.type;
+        counts[type] = (counts[type] || 0) + 1;
+    });
+
+    return Object.entries(counts); // returns array [type, count]
+};
+
+onMounted(() => {
+    getProducts();
+});
+</script>
