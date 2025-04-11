@@ -41,6 +41,12 @@ export default [
     },
     component: () => import("../views/admin/products/form.vue"),
   },
+  {
+    path: "/admin/product-category",
+    name: "admin-product-category-list",
+    meta: { title: "Products Category List Page", authRequired: false },
+    component: () => import("../views/admin/product-category"),
+  },
 
   {
     path: "/admin/user",

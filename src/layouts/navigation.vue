@@ -137,7 +137,7 @@ const menus = ref([
         icon: mdiTextBoxMultipleOutline,
         submenu: [
             { label: "Products List", to: "/admin/products" },
-            { label: "Products Category List", to: "/404" },
+            { label: "Products Category List", to: "/admin/product-category" },
         ],
     },
 ]);

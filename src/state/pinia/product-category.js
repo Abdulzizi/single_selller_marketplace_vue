@@ -5,17 +5,29 @@ export const useProductCategoryStore = defineStore("category", {
   state: () => ({
     apiUrl: import.meta.env.VITE_APP_APIURL || "http://127.0.0.1:8000",
     categories: [],
+    category: null,
     error: {
       status: null,
       message: null,
       list: [],
     },
+    modalAction: {
+      action: "",
+      modal_title: "",
+      modal_button: "",
+    },
     totalData: 0,
     current: 1,
     perPage: 5,
     searchQuery: "",
+    totalPage: 0,
   }),
+
   actions: {
+    openForm(newAction, category) {
+      this.modalAction.action = newAction;
+      this.category = category;
+    },
     async changePage(newPage) {
       this.current = newPage;
       await this.getCategories();
@@ -28,6 +40,7 @@ export const useProductCategoryStore = defineStore("category", {
 
         this.categories = res.data.data.list;
         this.totalData = res.data.data.meta.total;
+        this.totalPage = Math.ceil(this.totalData / this.perPage);
       } catch (error) {
         console.log(error);
       }
@@ -101,7 +114,12 @@ export const useProductCategoryStore = defineStore("category", {
         message: null,
         list: [],
       }),
-        (this.searchQuery = "");
+        (this.modalAction = {
+          action: "",
+          modal_title: "",
+          modal_button: "",
+        });
+      this.searchQuery = "";
       this.current = 1;
       this.perPage = 5;
       this.totalData = 0;

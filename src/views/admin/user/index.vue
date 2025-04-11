@@ -56,6 +56,7 @@ const openUserModal = (mode, id = null) => {
         userModalTitle.value = "Tambah User";
     }
 };
+
 const formUserRef = ref(null);
 const submitUserModal = () => {
     if (formUserRef.value) {
