@@ -141,6 +141,8 @@ export const useProductStore = defineStore("product", {
 
     async updateProduct(product) {
       try {
+        console.log(`Product: ${JSON.stringify(product, null, 2)}`);
+
         console.log(product);
         const res = await axios.put(`${this.apiUrl}/api/v1/products/`, product);
 

@@ -209,13 +209,14 @@ const paginate = async (page) => {
 
 const addProduct = () => {
     productStore.openForm('add')
-    router.push({ name: 'product-form', params: { product: '' } });
+    router.push({ name: 'product-form' });
 }
 
 const editProduct = async (id) => {
     productStore.openForm('edit')
     router.push({ name: 'product-form', params: { id } });
-    await productStore.getProductById(id)
+    // await productStore.getProductById(id);
+    // await productStore.getCategories();
 }
 
 const deleteProduct = async (id) => {

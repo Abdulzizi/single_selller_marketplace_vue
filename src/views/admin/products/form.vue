@@ -1,5 +1,10 @@
 <template>
     <Layout>
+
+        <div v-if="isLoading" class="fixed inset-0 bg-white bg-opacity-80 z-50 flex justify-center items-center">
+            <div class="animate-spin rounded-full h-20 w-20 border-t-8 border-blue-600"></div>
+        </div>
+
         <h1 class="text-2xl font-bold">{{ $route.params.id ? 'Edit Product' : 'Add Product' }}</h1>
 
         <form @submit.prevent="submitform" class="flex flex-col gap-6">
@@ -8,12 +13,12 @@
                 <div class="w-full lg:w-1/2 space-y-6">
                     <div>
                         <label class="block font-semibold mb-1">Desktop Image</label>
-                        <ImageCropper v-model:croppedImageUrl="croppedDesktopImage" />
+                        <ImageCropper v-model:croppedImageUrl="croppedDesktopImage" :imageUrl="desktopImageUrl" />
                     </div>
 
                     <div>
                         <label class="block font-semibold mb-1">Mobile Image</label>
-                        <ImageCropper v-model:croppedImageUrl="croppedMobileImage" />
+                        <ImageCropper v-model:croppedImageUrl="croppedMobileImage" :imageUrl="mobileImageUrl" />
                     </div>
                 </div>
 
@@ -39,13 +44,15 @@
                     <div>
                         <label class="block font-semibold mb-1" for="availability">Availability</label>
                         <Select id="availability" v-model="formModel.is_available" :options="availabilityOptions" />
+                        <p class="text-xs text-gray-500 mt-1">Selected: {{ formModel.is_available }}</p>
+
                     </div>
 
                     <!-- Category -->
                     <div>
                         <label class="block font-semibold mb-1" for="category">Category</label>
-                        <Select id="category" v-model="formModel.product_category_id" :options="categories"
-                            :class="inputClass('product_category_id')" />
+                        <Select id="category" placeholder="Choose category" v-model="formModel.product_category_id"
+                            :options="categories" :class="inputClass('product_category_id')" />
                         <p v-if="fieldError('product_category_id')" class="text-red-500 text-sm mt-1">
                             {{ fieldError('product_category_id') }}
                         </p>
@@ -99,6 +106,12 @@
                                 </Button>
                             </div>
                         </div>
+
+                        <div v-if="Object.keys(errors.details || {}).length" class="text-red-500 text-sm">
+                            <span v-for="(err, index2) in errors.details" :key="index2">
+                                {{ err }}
+                            </span>
+                        </div>
                     </div>
 
                     <div v-else class="text-center text-gray-400 italic py-8 border border-dashed rounded-lg">
@@ -112,7 +125,7 @@
                 <Button type="button" color="secondary" class="text-lg px-6 py-3" @click="backToList">
                     Back
                 </Button>
-                <Button type="submit" class="text-lg px-6 py-3">
+                <Button @click="submitform" class="text-lg px-6 py-3">
                     Submit
                 </Button>
             </div>
@@ -123,223 +136,162 @@
 </template>
 
 <script setup>
-import Layout from "@/layouts/main.vue";
-import { ref, nextTick, onMounted } from "vue";
+import { ref, reactive, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
 
+import Layout from "@/layouts/main.vue";
 import Select from "@/components/widgets/Select";
 import Button from "@/components/widgets/Button";
 import Input from "@/components/widgets/Input";
 import ImageCropper from "@/components/widgets/Cropper";
 import Icon from "@/components/widgets/Icon";
 import { mdiCancel } from "@mdi/js";
-import { getProgressInstance } from "@/helpers/progress";
 import { Toaster, toast } from "vue-sonner";
 
-import { useProductCategoryStore, useProductStore } from "@/state/pinia";
-import { useRouter } from "vue-router";
-
-const croppedDesktopImage = ref("");
-const croppedMobileImage = ref("")
-
-const progress = getProgressInstance();
-const details = ref([
-    {
-        type: '',
-        description: '',
-        price: '',
-        is_added: true
-    }
-]);
-
-const formModel = ref({
-    // id: '',
-    name: '',
-    product_category_id: '',
-    product_category_name: '',
-    is_available: '',
-    price: '',
-    description: '',
-    photo_desktop: '',
-    photo_mobile: '',
-    details: details.value,
-    details_deleted: []
-});
-
-const categories = ref([]);
-const productCategoryStore = useProductCategoryStore();
-const productStore = useProductStore();
+import { useProductStore, useProductCategoryStore } from "@/state/pinia";
+import { getProgressInstance } from "@/helpers/progress";
 
 const router = useRouter();
-const isSubmitting = ref(false);
-const errors = ref({});
+const route = useRoute();
+const progress = getProgressInstance();
 
-const backToList = () => {
-    router.push({ name: 'admin-product-list' });
-}
+const productStore = useProductStore();
+const categoryStore = useProductCategoryStore();
 
+const formModel = reactive({
+    id: null,
+    name: "",
+    price: null,
+    is_available: true,
+    description: "",
+    product_category_id: null,
+    details: [],
+});
+
+const errors = reactive({});
+const isLoading = ref(false);
+const categories = ref([]);
 const availabilityOptions = [
-    { label: 'Available', value: true },
-    { label: 'Unavailable', value: false }
+    { value: true, label: "Available" },
+    { value: false, label: "Not Available" },
 ];
 
-const fieldError = (field) => errors.value[field];
-const inputClass = (field) => fieldError(field) ? 'border-red-500' : '';
+const croppedDesktopImage = ref(null);
+const croppedMobileImage = ref(null);
+const desktopImageUrl = ref(null);
+const mobileImageUrl = ref(null);
+
+const fetchCategories = async () => {
+    await categoryStore.getCategories();
+    categories.value = categoryStore.categories.map((cat) => ({
+        value: cat.id,
+        label: cat.name,
+    }));
+};
+
+const fetchProduct = async () => {
+    if (route.params.id) {
+        progress.start();
+        isLoading.value = true;
+
+        await productStore.getProductById(route.params.id);
+        const data = productStore.productById;
+
+        Object.assign(formModel, {
+            id: data.id,
+            name: data.name,
+            price: data.price,
+            is_available: data.is_available,
+            product_category_id: data.product_category_id,
+            description: data.description,
+            details: data.details || [],
+        });
+
+        desktopImageUrl.value = data.photo_desktop_url;
+        mobileImageUrl.value = data.photo_mobile_url;
+
+        isLoading.value = false;
+        progress.finish();
+    }
+};
+
+const addOrEditProduct = async () => {
+    progress.start();
+    isLoading.value = true;
+    errors.details = {};
+
+    const detailsWithFlags = formModel.details.map((detail) => {
+        return {
+            ...detail,
+            is_added: !detail.id, // true if it doesn't have an id
+            is_updated: !!detail.id, // true if it has an id
+        };
+    });
+
+    const payload = {
+        ...formModel,
+        details: detailsWithFlags,
+        photo_desktop: croppedDesktopImage.value || desktopImageUrl.value,
+        photo_mobile: croppedMobileImage.value || mobileImageUrl.value,
+    };
+
+    try {
+        // console.log(`Payload: ${JSON.stringify(payload, null, 2)}`);
+
+        if (route.params.id) {
+            await productStore.updateProduct(payload);
+        } else {
+            await productStore.addProduct(payload);
+        }
+
+        if (productStore.response?.status === 200) {
+            progress.finish();
+            toast.success(`Product ${route.params.id ? "updated" : "created"} successfully`);
+            productStore.resetState();
+            router.push({ name: "admin-product-list" });
+        } else {
+            progress.fail();
+            toast.error("There was an error with your submission");
+            Object.assign(errors, productStore.response?.list || {});
+            isLoading.value = false;
+        }
+    } catch (err) {
+        const res = err.response?.data;
+        progress.fail();
+        toast.error("There was an error with your submission");
+        if (res?.errors) Object.assign(errors, res.errors);
+    } finally {
+        isLoading.value = false;
+    }
+};
+
+const submitform = () => {
+    addOrEditProduct();
+};
+
+const fieldError = (field) => errors?.[field] || "";
+
+const inputClass = (field) => (fieldError(field) ? "border-red-500" : "");
 
 const addDetail = () => {
-    formModel.value.details.push({ type: '', description: '', price: '' });
+    formModel.details.push({
+        type: "",
+        description: "",
+        price: null,
+    });
 };
 
 const removeDetail = (index) => {
-    toast.success("Product Detail Deleted",
-        {
-            position: "bottom-right",
-            duration: 3000,
-            class: "bg-green-500 text-white border-none shadow-lg",
-        });
-    formModel.value.details.splice(index, 1);
+    formModel.details.splice(index, 1);
 };
 
-const getProductCategories = async () => {
-    await productCategoryStore.getCategories();
-
-    if (productCategoryStore.categories) {
-        categories.value = productCategoryStore.categories.map(cat => ({
-            label: cat.name,
-            value: cat.id
-        }));
-        // console.log(`Mapped Categories: ${JSON.stringify(categories.value)}`);
-    } else {
-        categories.value = [];
-    }
-};
-
-const submitform = async () => {
-    progress.start(); // Start progress
-    errors.value = {};
-    isSubmitting.value = true;
-
-    // Assign cropped images to formModel
-    formModel.value.photo_desktop = croppedDesktopImage.value;
-    formModel.value.photo_mobile = croppedMobileImage.value;
-
-    // Basic validation
-    if (!formModel.value.name) errors.value.name = 'Name is required.';
-    if (!formModel.value.price) errors.value.price = 'Price is required.';
-    if (!formModel.value.product_category_id) errors.value.product_category_id = 'Category is required.';
-
-    if (Object.keys(errors.value).length === 0) {
-        const payload = {
-            name: formModel.value.name,
-            product_category_id: formModel.value.product_category_id,
-            product_category_name: formModel.value.product_category_name,
-            is_available: formModel.value.is_available ? 1 : 0,
-            price: parseFloat(formModel.value.price),
-            description: formModel.value.description,
-            photo_desktop: formModel.value.photo_desktop,
-            photo_mobile: formModel.value.photo_mobile,
-            details: formModel.value.details.map(d => ({
-                type: d.type,
-                description: d.description,
-                price: parseFloat(d.price),
-                is_added: d.is_added ?? true
-            })),
-            details_deleted: formModel.value.details_deleted ?? []
-        };
-
-        console.log('Payload:', payload);
-
-        try {
-            const id = router.currentRoute.value.params.id;
-            if (id) {
-                await productStore.updateProduct(id, payload);
-                toast.success("Product Updated", {
-                    description: "You have successfully updated the product.",
-                    position: "bottom-right",
-                    duration: 3000,
-                    class: "bg-green-500 text-white border-none shadow-lg",
-                });
-            } else {
-                await productStore.addProduct(payload);
-                toast.success("Product Added", {
-                    description: "You have successfully added a new product.",
-                    position: "bottom-right",
-                    duration: 3000,
-                    class: "bg-green-500 text-white border-none shadow-lg",
-                });
-            }
-
-            progress.finish();
-            router.push({ name: 'admin-product-list' });
-
-        } catch (e) {
-            progress.fail();
-            errors.value = e.response?.data?.errors || {};
-
-            toast.error("Something went wrong", {
-                description: e.response?.data?.message || "Please check the form and try again.",
-                position: "bottom-right",
-                duration: 3000,
-                class: "bg-red-500 text-white border-none shadow-lg",
-            });
-        }
-    } else {
-        progress.fail();
-        await nextTick(() => {
-            const firstErrorKey = Object.keys(errors.value)[0];
-            const el = document.getElementById(firstErrorKey);
-            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        });
-
-        toast.error("Form Incomplete", {
-            description: "Please fill out the required fields.",
-            position: "bottom-right",
-            duration: 3000,
-            class: "bg-yellow-500 text-white border-none shadow-lg",
-        });
-    }
-
-    isSubmitting.value = false;
-};
-
-const loadProduct = async (id) => {
-    try {
-        const product = await productStore.getProductById(id);
-
-        formModel.value = {
-            name: product.name,
-            product_category_id: product.product_category_id,
-            product_category_name: product.product_category_name || '',
-            is_available: !!product.is_available,
-            price: product.price,
-            description: product.description || '',
-            photo_desktop: product.photo_desktop || '',
-            photo_mobile: product.photo_mobile || '',
-            details: product.details?.map(detail => ({
-                ...detail,
-                is_updated: true
-            })) || [],
-            details_deleted: []
-        };
-
-        croppedDesktopImage.value = product.photo_desktop;
-        croppedMobileImage.value = product.photo_mobile;
-
-    } catch (error) {
-        toast.error("Failed to load product", {
-            description: error?.response?.data?.message || "Something went wrong.",
-            position: "bottom-right",
-            class: "bg-red-500 text-white border-none shadow-lg",
-        });
-    }
+const backToList = () => {
+    router.push({ name: "admin-product-list" });
+    productStore.resetState();
 };
 
 onMounted(async () => {
-    getProductCategories();
-
-    const id = router.currentRoute.value.params.id;
-    if (id) {
-        await loadProduct(id);
-    }
-
-})
+    await fetchCategories();
+    await fetchProduct();
+});
 </script>
